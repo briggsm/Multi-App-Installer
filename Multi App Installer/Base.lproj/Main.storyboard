@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -682,7 +680,7 @@
         <!--Tab View Controller-->
         <scene sceneID="0UT-JD-a5l">
             <objects>
-                <tabViewController selectedTabViewItemIndex="1" id="eQQ-7v-6OT" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="0" id="eQQ-7v-6OT" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="" id="wG6-aB-ktK"/>
                         <tabViewItem identifier="" id="3TV-i9-SUd"/>
@@ -710,67 +708,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="751" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0wd-xe-9Ce">
+                            <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="ZpP-Km-oZX">
                                 <rect key="frame" x="20" y="258" width="711" height="22"/>
-                                <subviews>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="NnQ-Kg-RQl">
-                                        <rect key="frame" x="-2" y="3" width="93" height="17"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Scripts Folder:" id="eZ5-Uc-fVZ">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jhe-qJ-xDc">
-                                        <rect key="frame" x="97" y="0.0" width="522" height="22"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="XaM-Wk-YzY">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rMf-mF-Lxp">
-                                        <rect key="frame" x="621" y="-6" width="96" height="32"/>
-                                        <buttonCell key="cell" type="push" title="Browse..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QA5-wy-Enk">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="scriptsFolderBrowseBtnClicked:" target="ZAb-Wn-uCc" id="8wz-dY-vo9"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="NLB-vw-qgZ">
-                                <rect key="frame" x="18" y="233" width="715" height="17"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" title="Note: location of bash script files (that tell Name, Description, Download URL, Install actions of each App." id="snG-gc-xlU">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZpP-Km-oZX">
-                                <rect key="frame" x="20" y="187" width="711" height="22"/>
-                                <subviews>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GzL-gV-l1E">
-                                        <rect key="frame" x="-2" y="3" width="93" height="17"/>
+                                <beginningViews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GzL-gV-l1E">
+                                        <rect key="frame" x="-2" y="2.5" width="93" height="17"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Source Folder:" id="OUg-sL-AOK">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T2p-cg-iev">
+                                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T2p-cg-iev">
                                         <rect key="frame" x="97" y="0.0" width="522" height="22"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="uMf-Ej-Irz">
                                             <font key="font" metaFont="system"/>
@@ -778,8 +727,8 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rB0-Zt-UVL">
-                                        <rect key="frame" x="621" y="-6" width="96" height="32"/>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rB0-Zt-UVL">
+                                        <rect key="frame" x="621" y="-6.5" width="96" height="32"/>
                                         <buttonCell key="cell" type="push" title="Browse..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gO9-zv-HFF">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -788,7 +737,7 @@
                                             <action selector="sourceFolderBrowseBtnClicked:" target="ZAb-Wn-uCc" id="SnU-Lp-tg6"/>
                                         </connections>
                                     </button>
-                                </subviews>
+                                </beginningViews>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
@@ -800,8 +749,8 @@
                                     <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
                             </stackView>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BNE-ja-JPF">
-                                <rect key="frame" x="18" y="162" width="715" height="17"/>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="BNE-ja-JPF">
+                                <rect key="frame" x="18" y="233" width="715" height="17"/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" title="Note: Downloads download to this foler. Installs install from this foler." id="AZP-D6-Oe1">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -810,22 +759,15 @@
                             </textField>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="NLB-vw-qgZ" firstAttribute="leading" secondItem="CRg-FA-jfe" secondAttribute="leading" constant="20" id="Cdv-eS-SBp"/>
-                            <constraint firstItem="ZpP-Km-oZX" firstAttribute="leading" secondItem="CRg-FA-jfe" secondAttribute="leading" constant="20" id="GL0-c2-ubB"/>
+                            <constraint firstItem="ZpP-Km-oZX" firstAttribute="leading" secondItem="BNE-ja-JPF" secondAttribute="leading" id="EFq-M3-dPj"/>
                             <constraint firstAttribute="trailing" secondItem="BNE-ja-JPF" secondAttribute="trailing" constant="20" id="Ihe-86-v7y"/>
-                            <constraint firstItem="BNE-ja-JPF" firstAttribute="top" secondItem="ZpP-Km-oZX" secondAttribute="bottom" constant="8" id="Lug-2F-oKC"/>
-                            <constraint firstItem="ZpP-Km-oZX" firstAttribute="top" secondItem="NLB-vw-qgZ" secondAttribute="bottom" constant="24" id="NWy-yu-b8A"/>
                             <constraint firstItem="BNE-ja-JPF" firstAttribute="leading" secondItem="CRg-FA-jfe" secondAttribute="leading" constant="20" id="QxT-Ji-y54"/>
-                            <constraint firstAttribute="trailing" secondItem="NLB-vw-qgZ" secondAttribute="trailing" constant="20" id="cPy-tX-hKv"/>
-                            <constraint firstItem="0wd-xe-9Ce" firstAttribute="top" secondItem="CRg-FA-jfe" secondAttribute="top" constant="20" id="dcv-2n-JC9"/>
-                            <constraint firstAttribute="trailing" secondItem="ZpP-Km-oZX" secondAttribute="trailing" constant="20" id="oI9-6x-ZWa"/>
-                            <constraint firstItem="0wd-xe-9Ce" firstAttribute="leading" secondItem="CRg-FA-jfe" secondAttribute="leading" constant="20" id="tGg-zZ-5d6"/>
-                            <constraint firstAttribute="trailing" secondItem="0wd-xe-9Ce" secondAttribute="trailing" constant="20" id="tMC-7M-nlz"/>
-                            <constraint firstItem="NLB-vw-qgZ" firstAttribute="top" secondItem="0wd-xe-9Ce" secondAttribute="bottom" constant="8" id="uwY-Pr-f7v"/>
+                            <constraint firstItem="BNE-ja-JPF" firstAttribute="top" secondItem="ZpP-Km-oZX" secondAttribute="bottom" constant="8" symbolic="YES" id="W9b-Cw-UEG"/>
+                            <constraint firstItem="ZpP-Km-oZX" firstAttribute="trailing" secondItem="BNE-ja-JPF" secondAttribute="trailing" id="Weo-bH-Gfa"/>
+                            <constraint firstItem="ZpP-Km-oZX" firstAttribute="top" secondItem="CRg-FA-jfe" secondAttribute="top" constant="20" id="cBa-7Q-e4O"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="scriptsFolderTF" destination="jhe-qJ-xDc" id="NHa-Vj-bMX"/>
                         <outlet property="sourceFolderTF" destination="T2p-cg-iev" id="Qo4-y6-qho"/>
                     </connections>
                 </viewController>
@@ -841,10 +783,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="641" height="794"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4Ua-ub-F0N">
+                            <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="4Ua-ub-F0N">
                                 <rect key="frame" x="20" y="152" width="601" height="21"/>
                                 <middleViews>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
                                         <rect key="frame" x="116" y="-7" width="157" height="32"/>
                                         <buttonCell key="cell" type="push" title="Download Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IUb-EV-645">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -856,7 +798,7 @@
                                     </button>
                                 </middleViews>
                                 <endViews>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Y3t-9A-f1U">
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y3t-9A-f1U">
                                         <rect key="frame" x="269" y="-7" width="209" height="32"/>
                                         <buttonCell key="cell" type="push" title="Download &amp; Install Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lgY-hT-3Rm">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -866,7 +808,7 @@
                                             <action selector="downloadInstallSelectedBtnClicked:" target="aoz-B7-XrR" id="d15-YO-Usl"/>
                                         </connections>
                                     </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dSx-ho-6to">
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dSx-ho-6to">
                                         <rect key="frame" x="474" y="-7" width="133" height="32"/>
                                         <buttonCell key="cell" type="push" title="Install Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eLE-uv-CBv">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -896,7 +838,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ejt-Hy-KXh">
+                            <stackView orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="Ejt-Hy-KXh">
                                 <rect key="frame" x="20" y="203" width="601" height="564"/>
                             </stackView>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="NrN-PM-0yG">
@@ -925,7 +867,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <size key="minSize" width="584" height="98"/>
-                                            <size key="maxSize" width="593" height="10000000"/>
+                                            <size key="maxSize" width="601" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
                                     </subviews>

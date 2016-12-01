@@ -30,9 +30,9 @@ class DownloadInstallVC: NSViewController {
         super.viewDidLoad()
         
         // Build the list of Applications for the Main GUI
-        for appToQuery in appsToQuery {
-            
-        }
+//        for appToQuery in appsToQuery {
+//            
+//        }
     }
     
     

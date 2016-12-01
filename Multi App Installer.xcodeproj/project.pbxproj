@@ -7,20 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		47C9A85F1DF09DAC003C02F3 /* AppScripts in Resources */ = {isa = PBXBuildFile; fileRef = 47C9A85E1DF09DAC003C02F3 /* AppScripts */; };
+		47C9A8611DF09DC8003C02F3 /* MiscScripts in Resources */ = {isa = PBXBuildFile; fileRef = 47C9A8601DF09DC8003C02F3 /* MiscScripts */; };
 		47F089E31DE1853F00171D0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F089E21DE1853F00171D0D /* AppDelegate.swift */; };
 		47F089E51DE1853F00171D0D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F089E41DE1853F00171D0D /* ViewController.swift */; };
 		47F089E71DE1853F00171D0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47F089E61DE1853F00171D0D /* Assets.xcassets */; };
 		47F089EA1DE1853F00171D0D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47F089E81DE1853F00171D0D /* Main.storyboard */; };
 		47F089F21DE18AAD00171D0D /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F089F11DE18AAD00171D0D /* SettingsVC.swift */; };
 		47F089F41DE18E6800171D0D /* DownloadInstallVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F089F31DE18E6800171D0D /* DownloadInstallVC.swift */; };
-		47F089F81DE1C75700171D0D /* gimp.sh in Resources */ = {isa = PBXBuildFile; fileRef = 47F089F71DE1C75700171D0D /* gimp.sh */; };
-		47F089FA1DE1C76A00171D0D /* teamviewer.sh in Resources */ = {isa = PBXBuildFile; fileRef = 47F089F91DE1C76A00171D0D /* teamviewer.sh */; };
-		47F089FE1DE1C83100171D0D /* AppsInstall.sh in Resources */ = {isa = PBXBuildFile; fileRef = 47F089FB1DE1C83100171D0D /* AppsInstall.sh */; };
-		47F089FF1DE1C83100171D0D /* downloadApps.sh in Resources */ = {isa = PBXBuildFile; fileRef = 47F089FC1DE1C83100171D0D /* downloadApps.sh */; };
-		47F08A001DE1C83100171D0D /* Install.sh in Resources */ = {isa = PBXBuildFile; fileRef = 47F089FD1DE1C83100171D0D /* Install.sh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		47C9A85E1DF09DAC003C02F3 /* AppScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AppScripts; sourceTree = "<group>"; };
+		47C9A8601DF09DC8003C02F3 /* MiscScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MiscScripts; sourceTree = "<group>"; };
 		47F089DF1DE1853F00171D0D /* Multi App Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Multi App Installer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		47F089E21DE1853F00171D0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		47F089E41DE1853F00171D0D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -29,11 +28,6 @@
 		47F089EB1DE1853F00171D0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		47F089F11DE18AAD00171D0D /* SettingsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		47F089F31DE18E6800171D0D /* DownloadInstallVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadInstallVC.swift; sourceTree = "<group>"; };
-		47F089F71DE1C75700171D0D /* gimp.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = gimp.sh; sourceTree = "<group>"; };
-		47F089F91DE1C76A00171D0D /* teamviewer.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = teamviewer.sh; sourceTree = "<group>"; };
-		47F089FB1DE1C83100171D0D /* AppsInstall.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = AppsInstall.sh; sourceTree = "<group>"; };
-		47F089FC1DE1C83100171D0D /* downloadApps.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = downloadApps.sh; sourceTree = "<group>"; };
-		47F089FD1DE1C83100171D0D /* Install.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = Install.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,36 +60,17 @@
 		47F089E11DE1853F00171D0D /* Multi App Installer */ = {
 			isa = PBXGroup;
 			children = (
+				47F089E81DE1853F00171D0D /* Main.storyboard */,
 				47F089F11DE18AAD00171D0D /* SettingsVC.swift */,
 				47F089F31DE18E6800171D0D /* DownloadInstallVC.swift */,
-				47F089F61DE1C73E00171D0D /* Misc Scripts */,
-				47F089F51DE1C73400171D0D /* Application Scripts */,
+				47C9A85E1DF09DAC003C02F3 /* AppScripts */,
+				47C9A8601DF09DC8003C02F3 /* MiscScripts */,
 				47F089E21DE1853F00171D0D /* AppDelegate.swift */,
 				47F089E41DE1853F00171D0D /* ViewController.swift */,
 				47F089E61DE1853F00171D0D /* Assets.xcassets */,
-				47F089E81DE1853F00171D0D /* Main.storyboard */,
 				47F089EB1DE1853F00171D0D /* Info.plist */,
 			);
 			path = "Multi App Installer";
-			sourceTree = "<group>";
-		};
-		47F089F51DE1C73400171D0D /* Application Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				47F089F71DE1C75700171D0D /* gimp.sh */,
-				47F089F91DE1C76A00171D0D /* teamviewer.sh */,
-			);
-			name = "Application Scripts";
-			sourceTree = "<group>";
-		};
-		47F089F61DE1C73E00171D0D /* Misc Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				47F089FB1DE1C83100171D0D /* AppsInstall.sh */,
-				47F089FC1DE1C83100171D0D /* downloadApps.sh */,
-				47F089FD1DE1C83100171D0D /* Install.sh */,
-			);
-			name = "Misc Scripts";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,13 +133,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F089FF1DE1C83100171D0D /* downloadApps.sh in Resources */,
-				47F089F81DE1C75700171D0D /* gimp.sh in Resources */,
-				47F089FE1DE1C83100171D0D /* AppsInstall.sh in Resources */,
-				47F08A001DE1C83100171D0D /* Install.sh in Resources */,
+				47C9A85F1DF09DAC003C02F3 /* AppScripts in Resources */,
+				47C9A8611DF09DC8003C02F3 /* MiscScripts in Resources */,
 				47F089E71DE1853F00171D0D /* Assets.xcassets in Resources */,
 				47F089EA1DE1853F00171D0D /* Main.storyboard in Resources */,
-				47F089FA1DE1C76A00171D0D /* teamviewer.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,7 +208,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -279,7 +251,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -294,6 +266,7 @@
 				DEVELOPMENT_TEAM = FQ6JHNT6KD;
 				INFOPLIST_FILE = "Multi App Installer/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "briggs-inc.Multi-App-Installer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -308,6 +281,7 @@
 				DEVELOPMENT_TEAM = FQ6JHNT6KD;
 				INFOPLIST_FILE = "Multi App Installer/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "briggs-inc.Multi-App-Installer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
