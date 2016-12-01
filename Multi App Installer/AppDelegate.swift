@@ -21,6 +21,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
-
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true  // So clicking the red X in upper-left of window will terminate the app
+    }
 }
 

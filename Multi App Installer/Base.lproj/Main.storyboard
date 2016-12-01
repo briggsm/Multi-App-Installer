@@ -680,7 +680,7 @@
         <!--Tab View Controller-->
         <scene sceneID="0UT-JD-a5l">
             <objects>
-                <tabViewController selectedTabViewItemIndex="0" id="eQQ-7v-6OT" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="1" id="eQQ-7v-6OT" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="" id="wG6-aB-ktK"/>
                         <tabViewItem identifier="" id="3TV-i9-SUd"/>
@@ -780,14 +780,26 @@
             <objects>
                 <viewController title="Download &amp; Install" id="aoz-B7-XrR" customClass="DownloadInstallVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="v4L-he-Dc1">
-                        <rect key="frame" x="0.0" y="0.0" width="641" height="794"/>
+                        <rect key="frame" x="0.0" y="0.0" width="724" height="794"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="4Ua-ub-F0N">
-                                <rect key="frame" x="20" y="152" width="601" height="21"/>
+                                <rect key="frame" x="20" y="152" width="684" height="21"/>
+                                <beginningViews>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vOx-UX-sFg">
+                                        <rect key="frame" x="-6" y="-7" width="66" height="32"/>
+                                        <buttonCell key="cell" type="push" title="Quit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Nkb-0C-YO5">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="quitBtnClicked:" target="aoz-B7-XrR" id="YSf-Ep-0XW"/>
+                                        </connections>
+                                    </button>
+                                </beginningViews>
                                 <middleViews>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
-                                        <rect key="frame" x="116" y="-7" width="157" height="32"/>
+                                        <rect key="frame" x="199" y="-7" width="157" height="32"/>
                                         <buttonCell key="cell" type="push" title="Download Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IUb-EV-645">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -799,7 +811,7 @@
                                 </middleViews>
                                 <endViews>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y3t-9A-f1U">
-                                        <rect key="frame" x="269" y="-7" width="209" height="32"/>
+                                        <rect key="frame" x="352" y="-7" width="209" height="32"/>
                                         <buttonCell key="cell" type="push" title="Download &amp; Install Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lgY-hT-3Rm">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -809,7 +821,7 @@
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dSx-ho-6to">
-                                        <rect key="frame" x="474" y="-7" width="133" height="32"/>
+                                        <rect key="frame" x="557" y="-7" width="133" height="32"/>
                                         <buttonCell key="cell" type="push" title="Install Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eLE-uv-CBv">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -823,15 +835,17 @@
                                     <integer value="1000"/>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
+                                    <integer value="1000"/>
                                 </visibilityPriorities>
                                 <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
                             </stackView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="29X-Bm-D4b">
-                                <rect key="frame" x="18" y="775" width="605" height="19"/>
+                                <rect key="frame" x="18" y="775" width="688" height="19"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Applications:" id="NOS-g5-5u4">
                                     <font key="font" metaFont="system" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -839,17 +853,17 @@
                                 </textFieldCell>
                             </textField>
                             <stackView orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="Ejt-Hy-KXh">
-                                <rect key="frame" x="20" y="203" width="601" height="564"/>
+                                <rect key="frame" x="20" y="203" width="684" height="564"/>
                             </stackView>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="NrN-PM-0yG">
-                                <rect key="frame" x="18" y="179" width="605" height="18"/>
+                                <rect key="frame" x="18" y="179" width="688" height="18"/>
                                 <buttonCell key="cell" type="check" title="De-select All" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="IXZ-eb-ev4">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xnZ-9m-cKv">
-                                <rect key="frame" x="18" y="127" width="605" height="17"/>
+                                <rect key="frame" x="18" y="127" width="688" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Status:" id="rLh-me-OAC">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -857,17 +871,17 @@
                                 </textFieldCell>
                             </textField>
                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q12-gF-Amc">
-                                <rect key="frame" x="20" y="20" width="601" height="100"/>
+                                <rect key="frame" x="20" y="20" width="684" height="100"/>
                                 <clipView key="contentView" id="DO5-8r-5oH">
-                                    <rect key="frame" x="1" y="1" width="584" height="98"/>
+                                    <rect key="frame" x="1" y="1" width="667" height="98"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="8pr-J6-hK6">
-                                            <rect key="frame" x="0.0" y="0.0" width="584" height="98"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="667" height="98"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="584" height="98"/>
-                                            <size key="maxSize" width="601" height="10000000"/>
+                                            <size key="minSize" width="667" height="98"/>
+                                            <size key="maxSize" width="760" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
                                     </subviews>
@@ -881,7 +895,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="6Nu-Ra-91n">
-                                    <rect key="frame" x="585" y="1" width="15" height="98"/>
+                                    <rect key="frame" x="668" y="1" width="15" height="98"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
@@ -917,7 +931,7 @@
                 </viewController>
                 <customObject id="NhP-7g-tBg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="863.5" y="1192"/>
+            <point key="canvasLocation" x="905" y="1192"/>
         </scene>
     </scenes>
 </document>

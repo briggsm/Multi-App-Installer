@@ -109,6 +109,11 @@ class DownloadInstallVC: NSViewController {
         
     }
     
+    @IBAction func quitBtnClicked(_ sender: NSButton) {
+        NSApplication.shared().terminate(self)
+    }
+    
+    
     func alertTooOldAndQuit(userOsVer: OperatingSystemVersion) {
         printLog(str: "OS Version is TOO OLD: \(userOsVer)")
         _ = osVerTooOldAlert(userOsVer: userOsVer)
@@ -141,7 +146,7 @@ class DownloadInstallVC: NSViewController {
         
         // Print to log file
         if let cachesDirUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
-            let logFilePathUrl = cachesDirUrl.appendingPathComponent("security-fixer-upper-log.txt")
+            let logFilePathUrl = cachesDirUrl.appendingPathComponent("multi-app-installer-log.txt")
             let logData = (prettyStr + terminator).data(using: .utf8, allowLossyConversion: false)!
             
             if FileManager.default.fileExists(atPath: logFilePathUrl.path) {
@@ -164,12 +169,12 @@ class DownloadInstallVC: NSViewController {
     }
     
     func changeCurrentDirToScriptsDir() {
-        guard let runWsPath = Bundle.main.path(forResource: "Scripts/runWs", ofType:"sh") else {
-            printLog(str: "\n  Unable to locate: Scripts/runWs.sh!")
+        guard let keepmePath = Bundle.main.path(forResource: "Scripts/KEEPME", ofType:"sh") else {
+            printLog(str: "\n  Unable to locate: Scripts/KEEPME.sh!")
             return
         }
         
-        scriptsDirPath = String(runWsPath.characters.dropLast(8))  // drop off: "runWs.sh"
+        scriptsDirPath = String(keepmePath.characters.dropLast(9))  // drop off: "KEEPME.sh"
         if FileManager.default.changeCurrentDirectoryPath(scriptsDirPath) {
             //printLog(str: "success changing dir to: \(scriptsDirPath)")
         } else {
@@ -181,12 +186,13 @@ class DownloadInstallVC: NSViewController {
         do {
             var scriptsDirContents = try FileManager.default.contentsOfDirectory(atPath: scriptsDirPath)
             
-            // Remove "runWs.sh" from the list of scripts.
-            if let index = scriptsDirContents.index(of: "runWs.sh") {
+            // Remove "KEEPME.sh" from the list of scripts.
+            if let index = scriptsDirContents.index(of: "KEEPME.sh") {
                 scriptsDirContents.remove(at: index)
             }
             
             scriptsToQuery = scriptsDirContents
+            printLog(str: "scriptsToQuery: \(scriptsToQuery)")
         } catch {
             printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
         }
