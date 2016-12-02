@@ -14,6 +14,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     var scriptsDirPath: String = ""
     var scriptsToQuery = Array<String>()
     
+    var downloadTask: URLSessionDownloadTask!
+    
     @IBOutlet weak var appsStackView: NSStackView!
     @IBOutlet weak var selectAllCB: NSButton!
     @IBOutlet weak var actionBtnsStackView: NSStackView!
@@ -100,9 +102,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             selectionCB.state = NSOnState
             selectionCB.identifier = scriptToQuery
             
-            
-            
-            
             // Download Status Image View
             var downloadStatusImgView:NSImageView
             if #available(OSX 10.12, *) {
@@ -139,7 +138,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             downloadImgBtnSV.addView(downloadStatusImgView, in: .leading)
             downloadImgBtnSV.addView(downloadBtn, in: .leading)
             
-            
             // Download Progress
             let downloadProgress = NSProgressIndicator()
             downloadProgress.style = .barStyle
@@ -156,35 +154,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             downloadStackView.addView(downloadProgress, in: .top)
             
             
-//            // Download Box Stack View
-//            let downloadBoxSV = NSStackView()
-//            downloadBoxSV.alignment = .centerY
-//            downloadBoxSV.spacing = 10
-//            if #available(OSX 10.11, *) {
-//                downloadBoxSV.distribution = .fill
-//            } else {
-//                // Fallback on earlier versions
-//            }
-//            //downloadBoxSV.translatesAutoresizingMaskIntoConstraints = false // NSStackView bug for 10.9 & 10.10
-//            downloadBoxSV.addView(downloadStatusImgView, in: .leading)
-//            downloadBoxSV.addView(downloadBtn, in: .leading)
-            
-//            // Download Box
-//            let downloadBox = NSBox()
-//            downloadBox.title = "Download Box"
-//            downloadBox.addSubview(downloadBoxSV)
-//            //downloadBox.addSubview(downloadStatusImgView)
-//            //downloadBox.addSubview(downloadBtn)
-            
-//            NSLayoutConstraint(item: downloadBoxSV, attribute: .leading, relatedBy: .equal, toItem: downloadBox, attribute: .leading, multiplier: 1.0, constant: 0.0).isActive = true
-//            NSLayoutConstraint(item: downloadBoxSV, attribute: .trailing, relatedBy: .equal, toItem: downloadBox, attribute: .trailing, multiplier: 1.0, constant: 0.0).isActive = true
-//            
-//            NSLayoutConstraint(item: downloadBoxSV, attribute: .top, relatedBy: .equal, toItem: downloadBox, attribute: .top, multiplier: 1.0, constant: 0.0).isActive = true
-//            NSLayoutConstraint(item: downloadBoxSV, attribute: .bottom, relatedBy: .equal, toItem: downloadBox, attribute: .bottom, multiplier: 1.0, constant: 0.0).isActive = true
-            
-           
-
-            
             
             // Install Status Image View
             var installStatusImgView:NSImageView
@@ -198,9 +167,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             }
             installStatusImgView.identifier = scriptToQuery
             //installStatusImgView.translatesAutoresizingMaskIntoConstraints = true
-            
-
-
             
             // Install Button
             var installBtn: NSButton
@@ -239,13 +205,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             installStackView.spacing = 0
             installStackView.addView(installImgBtnSV, in: .top)
             installStackView.addView(installProgress, in: .top)
-
-            
-            
-            // Install Box
-            
-            
-            
             
             // Create Entry StackView
             let entryStackView = NSStackView()  // Default is Horizontal
@@ -255,19 +214,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             
             // Add all our components to the entry stack view
             entryStackView.addView(selectionCB, in: .leading)
-            //entryStackView.addView(downloadBox, in: .leading)
-            
-            //entryStackView.addView(downloadStatusImgView, in: .leading)
-            //entryStackView.addView(downloadBtn, in: .leading)
             entryStackView.addView(downloadStackView, in: .leading)
-            
-            //entryStackView.addView(installStatusImgView, in: .leading)
-            //entryStackView.addView(installBtn, in: .leading)
             entryStackView.addView(installStackView, in: .leading)
-            
-            
-            
-            
             
             // Add our entryStackView to the appsStackView
             appsStackView.addView(entryStackView, in: NSStackViewGravity.top)
@@ -275,10 +223,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             // Re-center the window on the screen
             //self.view.window?.center()
         }
-        
-        // Tests
-        //progressView
-        
     }
     
     @IBAction func selectAllCBToggled(_ sender: NSButton) {
@@ -461,52 +405,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         //let session = URLSession(configuration: config)
         let session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
         
-        let task = session.downloadTask(with: urlRequest)
-        task.resume()
-        
-        
-        /*
-        // make the request
-        let task = session.dataTask(with: urlRequest) {
-            (data, response, error) in
-            // check for any errors
-            guard error == nil else {
-                print("error calling GET on /todos/1")
-                print(error ?? "")
-                return
-            }
-            // make sure we got data
-            guard let responseData = data else {
-                print("Error: did not receive data")
-                return
-            }
-//            // parse the result as JSON, since that's what the API provides
-//            do {
-//                guard let todo = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: AnyObject] else {
-//                    print("error trying to convert data to JSON")
-//                    return
-//                }
-//                // now we have the todo, let's just print it to prove we can access it
-//                print("The todo is: " + todo.description)
-//                
-//                // the todo object is a dictionary
-//                // so we just access the title using the "title" key
-//                // so check for a title and print it if we have one
-//                guard let todoTitle = todo["title"] as? String else {
-//                    print("Could not get todo title from JSON")
-//                    return
-//                }
-//                print("The title is: " + todoTitle)
-//            } catch  {
-//                print("error trying to convert data to JSON")
-//                return
-//            }
-            
-            
-        }
-        
-        task.resume()
-        */
+        downloadTask = session.downloadTask(with: urlRequest)
+        downloadTask.resume()
     }
     
     //MARK: URLSessionDownloadDelegate
@@ -517,10 +417,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         
         printLog(str: "didFinishDownloadingTo: \(location)")
         
-       // let path = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
-        //let documentDirectoryPath:String = path[0]
         let fileManager = FileManager()
-        //let destinationURLForFile = URL(fileURLWithPath: documentDirectoryPath.appendingFormat("/file.pdf"))
         var sourceFilePath: String
         if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
             sourceFilePath = sourceFolderDefault
@@ -531,13 +428,10 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/TeamViewerHost.dmg")
         printLog(str: "destUrlForFile: \(destinationURLForFile)")
         
-        
         if fileManager.fileExists(atPath: destinationURLForFile.path){
-            //showFileWithPath(path: destinationURLForFile.path)
             printLog(str: "File already exists! Removing it!")
             do {
                 try fileManager.removeItem(at: destinationURLForFile)
-                
             }catch{
                 print("An error occurred while removing file at destination url")
             }
@@ -550,17 +444,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         }catch{
             print("An error occurred while moving file to destination url")
         }
-        
-        
-//        do {
-//            
-//            try fileManager.moveItem(at: location, to: destinationURLForFile)
-//            // show file
-//            //showFileWithPath(path: destinationURLForFile.path)
-//        }catch{
-//            print("An error occurred while moving file to destination url")
-//        }
-        
     }
     // 2
     func urlSession(_ session: URLSession,
@@ -570,7 +453,6 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     totalBytesExpectedToWrite: Int64){
         //printLog(str: "dl in progress: \(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100)")
         
-        //progressView.setProgress(Float(totalBytesWritten)/Float(totalBytesExpectedToWrite), animated: true)
         progressView.doubleValue = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
     }
 
@@ -579,8 +461,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession,
                     task: URLSessionTask,
                     didCompleteWithError error: Error?){
-        //downloadTask = nil
-        //progressView.setProgress(0.0, animated: true)
+        downloadTask = nil
         progressView.doubleValue = 0.0
         downloadSelectedBtn.isEnabled = true
         if (error != nil) {
