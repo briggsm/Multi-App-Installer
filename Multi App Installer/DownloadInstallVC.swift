@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class DownloadInstallVC: NSViewController {
+class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 
     //let appsToQuery = ["gimp.sh", "teamviewer.sh"]
     var scriptsDirPath: String = ""
@@ -18,6 +18,9 @@ class DownloadInstallVC: NSViewController {
     @IBOutlet weak var selectAllCB: NSButton!
     @IBOutlet weak var actionBtnsStackView: NSStackView!
     @IBOutlet var statusTV: NSTextView!
+    @IBOutlet weak var downloadSelectedBtn: NSButton!
+    
+    @IBOutlet weak var progressView: NSProgressIndicator!
     
     override func loadView() {
         // Adding this function so older OS's (eg <=10.9) can still call our viewDidLoad() function
@@ -67,7 +70,7 @@ class DownloadInstallVC: NSViewController {
         setupScriptsToQueryArray()
         
         // Re-center the window on the screen
-        self.view.window?.center()
+        //self.view.window?.center()
         
         // Make sure user's OS is Yosemite or higher. Yosemite (10.10.x) [14.x.x]. If not, tell user & Quit App.
         let minReqOsVer = OperatingSystemVersion(majorVersion: 10, minorVersion: 10, patchVersion: 0)  // Yosemite
@@ -86,19 +89,217 @@ class DownloadInstallVC: NSViewController {
         // Build the list of Apps for the Main GUI
         for scriptToQuery in scriptsToQuery {
             
+            // Selection Checkbox (with App Description)
+            var selectionCB: NSButton
+            if #available(OSX 10.12, *) {
+                selectionCB = NSButton(checkboxWithTitle: "App Description", target: nil, action: nil)
+            } else {
+                // Fallback on earlier versions
+                selectionCB = NSButton()
+            }
+            selectionCB.state = NSOnState
+            selectionCB.identifier = scriptToQuery
             
             
             
+            
+            // Download Status Image View
+            var downloadStatusImgView:NSImageView
+            if #available(OSX 10.12, *) {
+                downloadStatusImgView = NSImageView(image: NSImage(named: "greyQM")!)
+            } else {
+                // Fallback on earlier versions
+                downloadStatusImgView = NSImageView()
+                downloadStatusImgView.image = NSImage(named: "greyQM")
+                //downloadStatusImgView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+            }
+            downloadStatusImgView.identifier = scriptToQuery
+            //downloadStatusImgView.translatesAutoresizingMaskIntoConstraints = true
+            
+            // Download Button
+            var downloadBtn: NSButton
+            if #available(OSX 10.12, *) {
+                downloadBtn = NSButton(title: NSLocalizedString("Download", comment: "button text"), target: self, action: #selector(downloadBtnClicked))
+            } else {
+                // Fallback on earlier versions
+                downloadBtn = NSButton()
+                downloadBtn.title = NSLocalizedString("Download", comment: "button text")
+                downloadBtn.target = self
+                downloadBtn.action = #selector(downloadBtnClicked)
+                downloadBtn.bezelStyle = NSBezelStyle.rounded
+                downloadBtn.font = NSFont.systemFont(ofSize: 13.0)
+                //downloadBtn.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+            }
+            downloadBtn.identifier = scriptToQuery
+            //downloadBtn.translatesAutoresizingMaskIntoConstraints = true  // NSStackView bug for 10.9 & 10.10
+            
+            // Download ImgBtn Stack View
+            let downloadImgBtnSV = NSStackView()
+            downloadImgBtnSV.spacing = 10
+            downloadImgBtnSV.addView(downloadStatusImgView, in: .leading)
+            downloadImgBtnSV.addView(downloadBtn, in: .leading)
+            
+            
+            // Download Progress
+            let downloadProgress = NSProgressIndicator()
+            downloadProgress.style = .barStyle
+            downloadProgress.isIndeterminate = false
+            downloadProgress.minValue = 0
+            downloadProgress.maxValue = 100
+            downloadProgress.doubleValue = 0
+            
+            // Download Stack View
+            let downloadStackView = NSStackView()
+            downloadStackView.orientation = .vertical
+            downloadStackView.spacing = 0
+            downloadStackView.addView(downloadImgBtnSV, in: .top)
+            downloadStackView.addView(downloadProgress, in: .top)
+            
+            
+//            // Download Box Stack View
+//            let downloadBoxSV = NSStackView()
+//            downloadBoxSV.alignment = .centerY
+//            downloadBoxSV.spacing = 10
+//            if #available(OSX 10.11, *) {
+//                downloadBoxSV.distribution = .fill
+//            } else {
+//                // Fallback on earlier versions
+//            }
+//            //downloadBoxSV.translatesAutoresizingMaskIntoConstraints = false // NSStackView bug for 10.9 & 10.10
+//            downloadBoxSV.addView(downloadStatusImgView, in: .leading)
+//            downloadBoxSV.addView(downloadBtn, in: .leading)
+            
+//            // Download Box
+//            let downloadBox = NSBox()
+//            downloadBox.title = "Download Box"
+//            downloadBox.addSubview(downloadBoxSV)
+//            //downloadBox.addSubview(downloadStatusImgView)
+//            //downloadBox.addSubview(downloadBtn)
+            
+//            NSLayoutConstraint(item: downloadBoxSV, attribute: .leading, relatedBy: .equal, toItem: downloadBox, attribute: .leading, multiplier: 1.0, constant: 0.0).isActive = true
+//            NSLayoutConstraint(item: downloadBoxSV, attribute: .trailing, relatedBy: .equal, toItem: downloadBox, attribute: .trailing, multiplier: 1.0, constant: 0.0).isActive = true
+//            
+//            NSLayoutConstraint(item: downloadBoxSV, attribute: .top, relatedBy: .equal, toItem: downloadBox, attribute: .top, multiplier: 1.0, constant: 0.0).isActive = true
+//            NSLayoutConstraint(item: downloadBoxSV, attribute: .bottom, relatedBy: .equal, toItem: downloadBox, attribute: .bottom, multiplier: 1.0, constant: 0.0).isActive = true
+            
+           
+
+            
+            
+            // Install Status Image View
+            var installStatusImgView:NSImageView
+            if #available(OSX 10.12, *) {
+                installStatusImgView = NSImageView(image: NSImage(named: "greyQM")!)
+            } else {
+                // Fallback on earlier versions
+                installStatusImgView = NSImageView()
+                installStatusImgView.image = NSImage(named: "greyQM")
+                //installStatusImgView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+            }
+            installStatusImgView.identifier = scriptToQuery
+            //installStatusImgView.translatesAutoresizingMaskIntoConstraints = true
+            
+
+
+            
+            // Install Button
+            var installBtn: NSButton
+            if #available(OSX 10.12, *) {
+                installBtn = NSButton(title: NSLocalizedString("Install", comment: "button text"), target: self, action: #selector(installBtnClicked))
+            } else {
+                // Fallback on earlier versions
+                installBtn = NSButton()
+                installBtn.title = NSLocalizedString("Install", comment: "button text")
+                installBtn.target = self
+                installBtn.action = #selector(installBtnClicked)
+                installBtn.bezelStyle = NSBezelStyle.rounded
+                installBtn.font = NSFont.systemFont(ofSize: 13.0)
+                //installBtn.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+            }
+            installBtn.identifier = scriptToQuery
+            
+            // Install ImgBtn Stack View
+            let installImgBtnSV = NSStackView()
+            installImgBtnSV.spacing = 10
+            installImgBtnSV.addView(installStatusImgView, in: .leading)
+            installImgBtnSV.addView(installBtn, in: .leading)
+            
+            
+            // Install Progress
+            let installProgress = NSProgressIndicator()
+            installProgress.style = .barStyle
+            installProgress.isIndeterminate = false
+            installProgress.minValue = 0
+            installProgress.maxValue = 100
+            installProgress.doubleValue = 0
+            
+            // Install Stack View
+            let installStackView = NSStackView()
+            installStackView.orientation = .vertical
+            installStackView.spacing = 0
+            installStackView.addView(installImgBtnSV, in: .top)
+            installStackView.addView(installProgress, in: .top)
+
+            
+            
+            // Install Box
+            
+            
+            
+            
+            // Create Entry StackView
+            let entryStackView = NSStackView()  // Default is Horizontal
+            entryStackView.alignment = .centerY
+            entryStackView.spacing = 10
+            //entryStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+            
+            // Add all our components to the entry stack view
+            entryStackView.addView(selectionCB, in: .leading)
+            //entryStackView.addView(downloadBox, in: .leading)
+            
+            //entryStackView.addView(downloadStatusImgView, in: .leading)
+            //entryStackView.addView(downloadBtn, in: .leading)
+            entryStackView.addView(downloadStackView, in: .leading)
+            
+            //entryStackView.addView(installStatusImgView, in: .leading)
+            //entryStackView.addView(installBtn, in: .leading)
+            entryStackView.addView(installStackView, in: .leading)
+            
+            
+            
+            
+            
+            // Add our entryStackView to the appsStackView
+            appsStackView.addView(entryStackView, in: NSStackViewGravity.top)
             
             // Re-center the window on the screen
-            self.view.window?.center()
+            //self.view.window?.center()
         }
+        
+        // Tests
+        //progressView
         
     }
     
+    @IBAction func selectAllCBToggled(_ sender: NSButton) {
+        let newState = selectAllCB.state
+        
+        if newState == NSOnState {
+            selectAllCB.title = NSLocalizedString("De-Select All", comment: "De-select all checkbox")
+        } else {
+            selectAllCB.title = NSLocalizedString("Select All", comment: "Select all checkbox")
+        }
+        
+        for entryStackView in appsStackView.views as! [NSStackView] {
+            if let selectionCB = entryStackView.views.first as! NSButton? {
+                selectionCB.state = newState
+            }
+        }
+    }
     
     @IBAction func downloadSelectedBtnClicked(_ sender: NSButton) {
-        
+        downloadSelectedBtn.isEnabled = false
+        makeDownloadCall()
     }
     
     @IBAction func downloadInstallSelectedBtnClicked(_ sender: NSButton) {
@@ -113,6 +314,27 @@ class DownloadInstallVC: NSViewController {
         NSApplication.shared().terminate(self)
     }
     
+    func downloadBtnClicked(btn: NSButton) {
+        let scriptToQuery = btn.identifier ?? ""
+        if !scriptToQuery.isEmpty {
+            //_ = runTask(taskFilename: scriptToQuery, arguments: ["-w"])  // -w => Write Setting
+            
+            //fixAsRoot(allFixItScriptsStr: scriptToQuery)
+            
+            //updateAllStatusImagesAndFixItBtns()
+        }
+    }
+
+    func installBtnClicked(btn: NSButton) {
+        let scriptToQuery = btn.identifier ?? ""
+        if !scriptToQuery.isEmpty {
+            //_ = runTask(taskFilename: scriptToQuery, arguments: ["-w"])  // -w => Write Setting
+            
+            //fixAsRoot(allFixItScriptsStr: scriptToQuery)
+            
+            //updateAllStatusImagesAndFixItBtns()
+        }
+    }
     
     func alertTooOldAndQuit(userOsVer: OperatingSystemVersion) {
         printLog(str: "OS Version is TOO OLD: \(userOsVer)")
@@ -220,5 +442,151 @@ class DownloadInstallVC: NSViewController {
         }
         
         return userOsVer
+    }
+    
+    func makeDownloadCall() {
+        // Set up the URL request
+        //let todoEndpoint: String = "https://jsonplaceholder.typicode.com/todos/1"
+        //let todoEndpoint: String = "https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg"
+        let todoEndpoint: String = "http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg"
+        
+        guard let url = URL(string: todoEndpoint) else {
+            print("Error: cannot create URL")
+            return
+        }
+        let urlRequest = URLRequest(url: url)
+        
+        // set up the session
+        let config = URLSessionConfiguration.default
+        //let session = URLSession(configuration: config)
+        let session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
+        
+        let task = session.downloadTask(with: urlRequest)
+        task.resume()
+        
+        
+        /*
+        // make the request
+        let task = session.dataTask(with: urlRequest) {
+            (data, response, error) in
+            // check for any errors
+            guard error == nil else {
+                print("error calling GET on /todos/1")
+                print(error ?? "")
+                return
+            }
+            // make sure we got data
+            guard let responseData = data else {
+                print("Error: did not receive data")
+                return
+            }
+//            // parse the result as JSON, since that's what the API provides
+//            do {
+//                guard let todo = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: AnyObject] else {
+//                    print("error trying to convert data to JSON")
+//                    return
+//                }
+//                // now we have the todo, let's just print it to prove we can access it
+//                print("The todo is: " + todo.description)
+//                
+//                // the todo object is a dictionary
+//                // so we just access the title using the "title" key
+//                // so check for a title and print it if we have one
+//                guard let todoTitle = todo["title"] as? String else {
+//                    print("Could not get todo title from JSON")
+//                    return
+//                }
+//                print("The title is: " + todoTitle)
+//            } catch  {
+//                print("error trying to convert data to JSON")
+//                return
+//            }
+            
+            
+        }
+        
+        task.resume()
+        */
+    }
+    
+    //MARK: URLSessionDownloadDelegate
+    // 1
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didFinishDownloadingTo location: URL){
+        
+        printLog(str: "didFinishDownloadingTo: \(location)")
+        
+       // let path = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        //let documentDirectoryPath:String = path[0]
+        let fileManager = FileManager()
+        //let destinationURLForFile = URL(fileURLWithPath: documentDirectoryPath.appendingFormat("/file.pdf"))
+        var sourceFilePath: String
+        if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
+            sourceFilePath = sourceFolderDefault
+        } else {
+            sourceFilePath = "/tmp"
+        }
+        //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/GiMp.sh")
+        let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/TeamViewerHost.dmg")
+        printLog(str: "destUrlForFile: \(destinationURLForFile)")
+        
+        
+        if fileManager.fileExists(atPath: destinationURLForFile.path){
+            //showFileWithPath(path: destinationURLForFile.path)
+            printLog(str: "File already exists! Removing it!")
+            do {
+                try fileManager.removeItem(at: destinationURLForFile)
+                
+            }catch{
+                print("An error occurred while removing file at destination url")
+            }
+        }
+            
+        // Move item from temp dir to desination dir
+        printLog(str: "Moving item from temp to destination")
+        do {
+            try fileManager.moveItem(at: location, to: destinationURLForFile)
+        }catch{
+            print("An error occurred while moving file to destination url")
+        }
+        
+        
+//        do {
+//            
+//            try fileManager.moveItem(at: location, to: destinationURLForFile)
+//            // show file
+//            //showFileWithPath(path: destinationURLForFile.path)
+//        }catch{
+//            print("An error occurred while moving file to destination url")
+//        }
+        
+    }
+    // 2
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didWriteData bytesWritten: Int64,
+                    totalBytesWritten: Int64,
+                    totalBytesExpectedToWrite: Int64){
+        //printLog(str: "dl in progress: \(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100)")
+        
+        //progressView.setProgress(Float(totalBytesWritten)/Float(totalBytesExpectedToWrite), animated: true)
+        progressView.doubleValue = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
+    }
+
+    
+    //MARK: URLSessionTaskDelegate
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    didCompleteWithError error: Error?){
+        //downloadTask = nil
+        //progressView.setProgress(0.0, animated: true)
+        progressView.doubleValue = 0.0
+        downloadSelectedBtn.isEnabled = true
+        if (error != nil) {
+            print(error!.localizedDescription)
+        }else{
+            print("The task finished transferring data successfully")
+        }
     }
 }
