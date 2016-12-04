@@ -28,6 +28,7 @@ class SettingsVC: NSViewController {
             sourceFolderTF.stringValue = sourceFolderDefault
         } else {
             sourceFolderTF.stringValue = "/tmp"
+            UserDefaults.standard.setValue("/tmp", forKey: "sourceFolder")
         }
 
     }

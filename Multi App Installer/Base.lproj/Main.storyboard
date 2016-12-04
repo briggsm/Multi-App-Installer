@@ -2,9 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -759,48 +757,6 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <box fixedFrame="YES" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="tej-mR-cXQ">
-                                <rect key="frame" x="17" y="111" width="177" height="114"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <view key="contentView" id="ycO-o9-AvG">
-                                    <rect key="frame" x="2" y="2" width="173" height="97"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cmH-4N-hl5">
-                                            <rect key="frame" x="0.0" y="83" width="122" height="14"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <button translatesAutoresizingMaskIntoConstraints="NO" id="cRT-Oq-8EN">
-                                                    <rect key="frame" x="-2" y="-2" width="61" height="18"/>
-                                                    <buttonCell key="cell" type="check" title="Check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="J9a-bs-OkS">
-                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                        <font key="font" metaFont="system"/>
-                                                    </buttonCell>
-                                                </button>
-                                                <button translatesAutoresizingMaskIntoConstraints="NO" id="Ubi-Zt-KLU">
-                                                    <rect key="frame" x="63" y="-2" width="61" height="18"/>
-                                                    <buttonCell key="cell" type="check" title="Check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="1cw-AS-jjW">
-                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                        <font key="font" metaFont="system"/>
-                                                    </buttonCell>
-                                                </button>
-                                            </subviews>
-                                            <visibilityPriorities>
-                                                <integer value="1000"/>
-                                                <integer value="1000"/>
-                                            </visibilityPriorities>
-                                            <customSpacing>
-                                                <real value="3.4028234663852886e+38"/>
-                                                <real value="3.4028234663852886e+38"/>
-                                            </customSpacing>
-                                        </stackView>
-                                    </subviews>
-                                </view>
-                            </box>
-                            <progressIndicator wantsLayer="YES" fixedFrame="YES" maxValue="100" doubleValue="50" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="Q5L-GR-ok3">
-                                <rect key="frame" x="199" y="195" width="32" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </progressIndicator>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ZpP-Km-oZX" firstAttribute="leading" secondItem="BNE-ja-JPF" secondAttribute="leading" id="EFq-M3-dPj"/>
@@ -840,9 +796,6 @@
                                             <action selector="quitBtnClicked:" target="aoz-B7-XrR" id="YSf-Ep-0XW"/>
                                         </connections>
                                     </button>
-                                    <progressIndicator wantsLayer="YES" fixedFrame="YES" maxValue="100" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="ScA-rc-qld">
-                                        <rect key="frame" x="62" y="1" width="135" height="20"/>
-                                    </progressIndicator>
                                 </beginningViews>
                                 <middleViews>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
@@ -883,10 +836,8 @@
                                     <integer value="1000"/>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
-                                    <integer value="1000"/>
                                 </visibilityPriorities>
                                 <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
@@ -978,7 +929,6 @@
                         <outlet property="actionBtnsStackView" destination="4Ua-ub-F0N" id="IAT-lx-Eku"/>
                         <outlet property="appsStackView" destination="f9e-4E-gbQ" id="2x1-Ij-r6Y"/>
                         <outlet property="downloadSelectedBtn" destination="q0y-CI-hQX" id="Evg-7E-QF2"/>
-                        <outlet property="progressView" destination="ScA-rc-qld" id="JpG-vG-Sh6"/>
                         <outlet property="selectAllCB" destination="NrN-PM-0yG" id="Wy0-uE-ojA"/>
                         <outlet property="statusTV" destination="8pr-J6-hK6" id="Wsb-pZ-VRX"/>
                     </connections>
