@@ -137,7 +137,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         // Build the list of Apps for the Main GUI
         for scriptToQuery in scriptsToQuery {
             
-            let allMetaTaskOutput = runSyncTaskAsUser(taskFilename: scriptToQuery, arguments: ["-allMeta"])
+            let allMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-allMeta"])
             if allMetaTaskOutput != "" {
                 let allMetaArr = allMetaTaskOutput.components(separatedBy: "||")
 
@@ -345,6 +345,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         }
         
         refreshAllDownloadStatusImgViews()
+        
+        refreshAllInstallStatusImgViews()
     }
     
     @IBAction func selectAllCBToggled(_ sender: NSButton) {
@@ -444,6 +446,32 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         }
     }
     
+    func refreshAllInstallStatusImgViews() {
+        for (scriptToQuery, installStatusImgView) in installStatusImgViewDict {
+            if let allMeta = allMetaDict[scriptToQuery] {
+                //if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
+                    //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(allMeta.saveAsFilename)")
+                
+//                    let installedLocationUrl = URL(fileURLWithPath: allMeta.proofAppExistsPath)
+//                    if FileManager.default.fileExists(atPath: installedLocationUrl.path) {
+//                        installStatusImgView.image = NSImage(named: "greenCheck")
+//                    } else {
+//                        installStatusImgView.image = NSImage(named: "redX")
+//                    }
+                
+
+                    //let installedLocationUrl = URL(fileURLWithPath: allMeta.proofAppExistsPath)
+                    if FileManager.default.fileExists(atPath: allMeta.proofAppExistsPath) {
+                        installStatusImgView.image = NSImage(named: "greenCheck")
+                    } else {
+                        installStatusImgView.image = NSImage(named: "redX")
+                    }
+                
+                //}
+            }
+        }
+    }
+    
     func startTheDownload(scriptToQuery: String) {
         if let allMeta = allMetaDict[scriptToQuery] {
             makeDownloadCall(scriptToQuery: scriptToQuery, downloadUrl: allMeta.downloadUrl)
@@ -454,10 +482,26 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         let scriptToQuery = btn.identifier ?? ""
         if !scriptToQuery.isEmpty {
             //_ = runTask(taskFilename: scriptToQuery, arguments: ["-w"])  // -w => Write Setting
-            
             //fixAsRoot(allFixItScriptsStr: scriptToQuery)
-            
             //updateAllStatusImagesAndFixItBtns()
+
+            // Start the indeterminate progress indicators
+            if let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
+                installProgressIndicator.isIndeterminate = true
+                installProgressIndicator.startAnimation(self)
+            }
+            
+            var iTaskOutput = ""
+            if let allMeta = allMetaDict[scriptToQuery] {
+                if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
+                    if allMeta.installUser == "root" {
+                        
+                        iTaskOutput = runAsyncTaskAsRoot(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                    } else {
+                        iTaskOutput = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                    }
+                }
+            }
         }
     }
     
@@ -687,16 +731,16 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         }
     }
         
-    func runSyncTaskAsUser(taskFilename: String, arguments: [String]) -> String {
+    func runSyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
         // Note: Purposely running in Main thread because it's not going take that long to run each of our tasks
         
-        printLog(str: "runTask: \(taskFilename) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
+        printLog(str: "runSyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
         
         // Make sure we can find the script file. Return if not.
-        let settingNameArr = taskFilename.components(separatedBy: ".")
-        guard let path = Bundle.main.path(forResource: "Scripts/" + settingNameArr[0], ofType:settingNameArr[1]) else {
-            printLog(str: "\n  Unable to locate: \(taskFilename)!")
-            return "Unable to locate: \(taskFilename)!"
+        let taskNameArr = scriptToQuery.components(separatedBy: ".")
+        guard let path = Bundle.main.path(forResource: "Scripts/" + taskNameArr[0], ofType:taskNameArr[1]) else {
+            printLog(str: "\n  Unable to locate: \(scriptToQuery)!")
+            return "Unable to locate: \(scriptToQuery)!"
         }
         
         // Init outputPipe
@@ -718,5 +762,84 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         // Return the output
         printLog(str: "[output: \(outputString)]")
         return outputString
+    }
+    
+    func runAsyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
+        //printLog(str: "runSyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
+        printLog(str: "runAsyncTaskAsRoot: \(scriptToQuery) \(arguments[0])")
+        
+        
+        
+        
+        // Setup & Launch our process Asynchronously
+        let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
+        
+        taskQueue.async {
+            
+//            guard let path = Bundle.main.path(forResource: "BuildScript",ofType:"command") else {
+//                print("Unable to locate BuildScript.command")
+//                return
+//            }
+            let taskNameArr = scriptToQuery.components(separatedBy: ".")
+            guard let path = Bundle.main.path(forResource: "Scripts/" + taskNameArr[0], ofType:taskNameArr[1]) else {
+                self.printLog(str: "\n  Unable to locate: \(scriptToQuery)!")
+                //return "Unable to locate: \(taskFilename)!"
+                return  // Can't return anything from async call??????????
+            }
+            
+            
+//            self.buildTask = Process()
+//            self.buildTask.launchPath = path
+//            self.buildTask.arguments = arguments
+            let ps: Process = Process()
+            ps.launchPath = path
+            ps.arguments = arguments
+            //ps.description = taskFilename
+            
+            //self.buildTask.terminationHandler = {
+            ps.terminationHandler = {
+                
+                task in
+                DispatchQueue.main.async(execute: {
+//                    self.buildButton.isEnabled = true
+//                    self.spinner.stopAnimation(self)
+//                    self.isRunning = false
+                    if let installProgressIndicator = self.installProgressIndicatorDict[scriptToQuery] {
+                        installProgressIndicator.stopAnimation(self)
+                        installProgressIndicator.isIndeterminate = false
+                        installProgressIndicator.doubleValue = 0
+                    }
+                    self.refreshAllInstallStatusImgViews()
+                })
+                
+            }
+            
+            //self.captureStandardOutputAndRouteToTextView(self.buildTask)
+            // Init outputPipe
+            let outputPipe = Pipe()
+            ps.standardOutput = outputPipe
+            
+//            self.buildTask.launch()
+//            self.buildTask.waitUntilExit()
+            ps.launch()
+            ps.waitUntilExit()
+            
+            // Read everything the outputPipe captured from stdout
+            let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+            var outputString = String(data: data, encoding: String.Encoding.utf8) ?? ""
+            outputString = outputString.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            self.printLog(str: "[output(\(scriptToQuery)): \(outputString)]")
+        }
+        
+        //printLog(str: "[output: \(outputString)]")
+        return ""  // Return empty string if no errors
+    }
+    
+    func runAsyncTaskAsRoot(scriptToQuery: String, arguments: [String]) -> String {
+        
+        
+        
+        return ""  // Return empty string if no errors
     }
 }

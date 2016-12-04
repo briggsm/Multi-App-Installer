@@ -31,7 +31,7 @@ if [ "$1" == "-allMeta" ]; then
 # e.g.: echo "gimp||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
 # e.g.: echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewer Host.app"
 
-    echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewer Host.app"
+    echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewerHost.app"
 fi
 
 if ([ "$1" == "-ad" ] || [ "$1" == "-dl" ] || [ "$1" == "-i" ]) && [ ! -d "$2" ]; then
