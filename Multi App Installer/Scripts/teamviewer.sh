@@ -20,7 +20,7 @@ if [ "$1" == "-appMeta" ]; then
 	# (2) - Download URL (where to download the app from)
 	# (3) - Download Filename to save as (just the filename, not the full path)
 	# (4) - Install as root or user (text is just "root" or "user" [w/o the quotes])
-	# (5) - Proof App already exists (full path. If this file exists, it's proof that the App is already installed)
+	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
 	echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewerHost.app"
 fi

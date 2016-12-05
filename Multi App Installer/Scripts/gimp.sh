@@ -20,7 +20,7 @@ if [ "$1" == "-appMeta" ]; then
 	# (2) - Download URL (where to download the app from)
 	# (3) - Download Filename to save as (just the filename, not the full path)
 	# (4) - Install as root or user (text is just "root" or "user" [w/o the quotes])
-	# (5) - Proof App already exists Path (full path. If this file exists, it's proof that the App is already installed)
+	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
 	echo "Gimp||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
 fi
