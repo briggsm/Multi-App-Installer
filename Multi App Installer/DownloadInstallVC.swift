@@ -12,7 +12,7 @@ import Cocoa
 //    var url: URL
 //    var saveToFilename: String
 //}
-struct AllMeta {
+struct AppMeta {
     var appDescription: String
     var downloadUrl: URL
     var saveAsFilename: String
@@ -33,7 +33,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     //var downloadTaskDict = [String : URLSessionDownloadTask]()
     
     //var dlMetaDict = [String : DlMeta]()
-    var allMetaDict = [String : AllMeta]()
+    var appMetaDict = [String : AppMeta]()
     
     
     // !!!!!!!!!!!!!!! Note: check eventually if I'm actually using all of these !!!!!!!!!!!!!!!!!!!!!1
@@ -137,18 +137,18 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         // Build the list of Apps for the Main GUI
         for scriptToQuery in scriptsToQuery {
             
-            let allMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-allMeta"])
-            if allMetaTaskOutput != "" {
-                let allMetaArr = allMetaTaskOutput.components(separatedBy: "||")
+            let appMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-appMeta"])
+            if appMetaTaskOutput != "" {
+                let appMetaArr = appMetaTaskOutput.components(separatedBy: "||")
 
                 // TODO - maybe add some sanity checks here...
-                guard let downloadUrl = URL(string: allMetaArr[1]) else {
+                guard let downloadUrl = URL(string: appMetaArr[1]) else {
                     print("Error: cannot create URL!")
                     //return
                     break  // out of for loop ??????????????????
                 }
                 
-                allMetaDict[scriptToQuery] = AllMeta(appDescription: allMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: allMetaArr[2], installUser: allMetaArr[3], proofAppExistsPath: allMetaArr[4])
+                appMetaDict[scriptToQuery] = AppMeta(appDescription: appMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: appMetaArr[2], installUser: appMetaArr[3], proofAppExistsPath: appMetaArr[4])
             }
             
             // Get App's Description
@@ -159,12 +159,12 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //            if dTaskOutput != "" {
             
                 // Selection Checkbox (with App Description)
-                if let allMeta = allMetaDict[scriptToQuery] {
+                if let appMeta = appMetaDict[scriptToQuery] {
                     var selectionCB: NSButton
                     if #available(OSX 10.12, *) {
                         //selectionCB = NSButton(checkboxWithTitle: dTaskOutput, target: nil, action: nil)
                         
-                        selectionCB = NSButton(checkboxWithTitle: allMeta.appDescription, target: nil, action: nil)
+                        selectionCB = NSButton(checkboxWithTitle: appMeta.appDescription, target: nil, action: nil)
                         
                     } else {
                         // Fallback on earlier versions
@@ -326,9 +326,9 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     //                }
                     
     //                // Add alllMetaDict entry to this scriptToQuery
-    //                let allMetaTaskOutput = runSyncTaskAsUser(taskFilename: scriptToQuery, arguments: ["-allMeta"])
-    //                if allMetaTaskOutput != "" {
-    //                    let dlMetaArr = allMetaTaskOutput.components(separatedBy: "||")
+    //                let appMetaTaskOutput = runSyncTaskAsUser(taskFilename: scriptToQuery, arguments: ["-appMeta"])
+    //                if appMetaTaskOutput != "" {
+    //                    let dlMetaArr = appMetaTaskOutput.components(separatedBy: "||")
     //                    
     //                    
     //                    
@@ -404,8 +404,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             if let selectionCB = entryStackView.views.first as! NSButton? {
                 if selectionCB.state == NSOnState {
                     if let scriptToQuery = selectionCB.identifier {
-                        if let allMeta = allMetaDict[scriptToQuery] {
-                            if allMeta.installUser == "root" {
+                        if let appMeta = appMetaDict[scriptToQuery] {
+                            if appMeta.installUser == "root" {
                                 // Install as root - gather all together, then kick of 1 after this loop is done. (so user only enters PW once)
                                 allInstallScriptsArr.append(scriptToQuery)
                             } else {
@@ -458,9 +458,9 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     
     func refreshAllDownloadStatusImgViews() {
         for (scriptToQuery, downloadStatusImgView) in downloadStatusImgViewDict {
-            if let allMeta = allMetaDict[scriptToQuery] {
+            if let appMeta = appMetaDict[scriptToQuery] {
                 if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(allMeta.saveAsFilename)")
+                    let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(appMeta.saveAsFilename)")
                     if FileManager.default.fileExists(atPath: destinationURLForFile.path) {
                         downloadStatusImgView.image = NSImage(named: "greenCheck")
                     } else {
@@ -473,11 +473,11 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     
     func refreshAllInstallStatusImgViews() {
         for (scriptToQuery, installStatusImgView) in installStatusImgViewDict {
-            if let allMeta = allMetaDict[scriptToQuery] {
+            if let appMeta = appMetaDict[scriptToQuery] {
                 //if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(allMeta.saveAsFilename)")
+                    //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(appMeta.saveAsFilename)")
                 
-//                    let installedLocationUrl = URL(fileURLWithPath: allMeta.proofAppExistsPath)
+//                    let installedLocationUrl = URL(fileURLWithPath: appMeta.proofAppExistsPath)
 //                    if FileManager.default.fileExists(atPath: installedLocationUrl.path) {
 //                        installStatusImgView.image = NSImage(named: "greenCheck")
 //                    } else {
@@ -485,8 +485,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //                    }
                 
 
-                    //let installedLocationUrl = URL(fileURLWithPath: allMeta.proofAppExistsPath)
-                    if FileManager.default.fileExists(atPath: allMeta.proofAppExistsPath) {
+                    //let installedLocationUrl = URL(fileURLWithPath: appMeta.proofAppExistsPath)
+                    if FileManager.default.fileExists(atPath: appMeta.proofAppExistsPath) {
                         installStatusImgView.image = NSImage(named: "greenCheck")
                     } else {
                         installStatusImgView.image = NSImage(named: "redX")
@@ -498,8 +498,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     }
     
     func startTheDownload(scriptToQuery: String) {
-        if let allMeta = allMetaDict[scriptToQuery] {
-            makeDownloadCall(scriptToQuery: scriptToQuery, downloadUrl: allMeta.downloadUrl)
+        if let appMeta = appMetaDict[scriptToQuery] {
+            makeDownloadCall(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
         }
     }
 
@@ -517,9 +517,9 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             }
             
             var iTaskOutput = ""
-            if let allMeta = allMetaDict[scriptToQuery] {
+            if let appMeta = appMetaDict[scriptToQuery] {
                 if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    if allMeta.installUser == "root" {
+                    if appMeta.installUser == "root" {
                         
                         //iTaskOutput = runAsyncTaskAsRoot(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
                         runBgInstallsAsRoot(allInstallScriptsStr: scriptToQuery)
@@ -688,12 +688,12 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //        }
         
         if let scriptToQuery = downloadTask.taskDescription {
-            if let allMeta = allMetaDict[scriptToQuery] {
+            if let appMeta = appMetaDict[scriptToQuery] {
 
                 //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/GiMp.sh")
                 //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/TeamViewerHost.dmg")
                 if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(allMeta.saveAsFilename)")
+                    let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(appMeta.saveAsFilename)")
                     printLog(str: "destUrlForFile: \(destinationURLForFile)")
                     
                     if fileManager.fileExists(atPath: destinationURLForFile.path){
