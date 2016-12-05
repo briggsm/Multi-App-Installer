@@ -827,7 +827,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
-                                            <action selector="InstallSelectedBtnClicked:" target="aoz-B7-XrR" id="jgq-du-lgl"/>
+                                            <action selector="installSelectedBtnClicked:" target="aoz-B7-XrR" id="ifz-A3-gL2"/>
                                         </connections>
                                     </button>
                                 </endViews>

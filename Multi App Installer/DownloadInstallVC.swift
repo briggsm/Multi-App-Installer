@@ -397,8 +397,33 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         
     }
     
-    @IBAction func InstallSelectedBtnClicked(_ sender: NSButton) {
+    @IBAction func installSelectedBtnClicked(_ sender: NSButton) {
+        var allInstallScriptsArr = [String]()
         
+        for entryStackView in appsStackView.views as! [NSStackView] {
+            if let selectionCB = entryStackView.views.first as! NSButton? {
+                if selectionCB.state == NSOnState {
+                    if let scriptToQuery = selectionCB.identifier {
+                        if let allMeta = allMetaDict[scriptToQuery] {
+                            if allMeta.installUser == "root" {
+                                // Install as root - gather all together, then kick of 1 after this loop is done. (so user only enters PW once)
+                                allInstallScriptsArr.append(scriptToQuery)
+                            } else {
+                                // Install as user - kick it off right now
+                                if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
+                                    _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        let allInstallScriptsStr = allInstallScriptsArr.joined(separator: " ")
+        if allInstallScriptsStr != "" {
+            runBgInstallsAsRoot(allInstallScriptsStr: allInstallScriptsStr)
+        }
     }
     
     @IBAction func quitBtnClicked(_ sender: NSButton) {
@@ -496,7 +521,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                 if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
                     if allMeta.installUser == "root" {
                         
-                        iTaskOutput = runAsyncTaskAsRoot(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                        //iTaskOutput = runAsyncTaskAsRoot(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                        runBgInstallsAsRoot(allInstallScriptsStr: scriptToQuery)
                     } else {
                         iTaskOutput = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
                     }
@@ -577,8 +603,11 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         do {
             var scriptsDirContents = try FileManager.default.contentsOfDirectory(atPath: scriptsDirPath)
             
-            // Remove "KEEPME.sh" from the list of scripts.
+            // Remove "KEEPME.sh" & "runIs.sh" from the list of scripts.
             if let index = scriptsDirContents.index(of: "KEEPME.sh") {
+                scriptsDirContents.remove(at: index)
+            }
+            if let index = scriptsDirContents.index(of: "runIs.sh") {
                 scriptsDirContents.remove(at: index)
             }
             
@@ -765,8 +794,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     }
     
     func runAsyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
-        //printLog(str: "runSyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
-        printLog(str: "runAsyncTaskAsRoot: \(scriptToQuery) \(arguments[0])")
+        //printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
+        printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0])")
         
         
         
@@ -804,12 +833,14 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //                    self.buildButton.isEnabled = true
 //                    self.spinner.stopAnimation(self)
 //                    self.isRunning = false
-                    if let installProgressIndicator = self.installProgressIndicatorDict[scriptToQuery] {
-                        installProgressIndicator.stopAnimation(self)
-                        installProgressIndicator.isIndeterminate = false
-                        installProgressIndicator.doubleValue = 0
+                    if arguments[0] == "-i" {
+                        if let installProgressIndicator = self.installProgressIndicatorDict[scriptToQuery] {
+                            installProgressIndicator.stopAnimation(self)
+                            installProgressIndicator.isIndeterminate = false
+                            installProgressIndicator.doubleValue = 0
+                        }
+                        self.refreshAllInstallStatusImgViews()
                     }
-                    self.refreshAllInstallStatusImgViews()
                 })
                 
             }
@@ -836,10 +867,39 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         return ""  // Return empty string if no errors
     }
     
-    func runAsyncTaskAsRoot(scriptToQuery: String, arguments: [String]) -> String {
+//    func runAsyncTaskAsRoot(scriptToQuery: String, arguments: [String]) -> String {
+//        printLog(str: "runAsyncTaskAsRoot: \(scriptToQuery) \(arguments[0])")
+//        
+//        
+//        
+//        return ""  // Return empty string if no errors
+//    }
+    
+    func runBgInstallsAsRoot(allInstallScriptsStr: String) {
         
-        
-        
-        return ""  // Return empty string if no errors
+        if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
+            printLog(str: "----------")
+            printLog(str: "runInstallsAsRoot()")
+            
+            
+            
+            // AppleScript
+            let appleScriptStr = "do shell script \"./runIs.sh '\(sourceFolderDefault)' \(allInstallScriptsStr)\" with administrator privileges"
+            //let appleScriptStr = "do shell script \"./runIs.sh \(sourceFolderDefault) \(allInstallScriptsStr)\" with administrator privileges"
+            printLog(str: "appleScriptStr: \(appleScriptStr)")
+            
+            // Run AppleScript
+            var asError: NSDictionary?
+            if let asObject = NSAppleScript(source: appleScriptStr) {
+                let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
+                
+                if let err = asError {
+                    printLog(str: "AppleScript Error: \(err)")
+                } else {
+                    printLog(str: asOutput.stringValue ?? "Note!: AS Output has 'nil' for stringValue")
+                }
+            }
+            printLog(str: "----------")
+        }
     }
 }
