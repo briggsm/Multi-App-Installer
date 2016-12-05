@@ -17,7 +17,7 @@ struct AppMeta {
     var downloadUrl: URL
     var saveAsFilename: String
     var installUser: String  // "root" or "user"
-    var proofAppExistsPath: String
+    var proofAppExistsPaths: [String]
 }
 
 class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
@@ -148,7 +148,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     break  // out of for loop ??????????????????
                 }
                 
-                appMetaDict[scriptToQuery] = AppMeta(appDescription: appMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: appMetaArr[2], installUser: appMetaArr[3], proofAppExistsPath: appMetaArr[4])
+                let proofAppExistsPathsArr = appMetaArr[4].components(separatedBy: "|")
+                appMetaDict[scriptToQuery] = AppMeta(appDescription: appMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: appMetaArr[2], installUser: appMetaArr[3], proofAppExistsPaths: proofAppExistsPathsArr)
             }
             
             // Get App's Description
@@ -474,25 +475,19 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     func refreshAllInstallStatusImgViews() {
         for (scriptToQuery, installStatusImgView) in installStatusImgViewDict {
             if let appMeta = appMetaDict[scriptToQuery] {
-                //if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(appMeta.saveAsFilename)")
-                
-//                    let installedLocationUrl = URL(fileURLWithPath: appMeta.proofAppExistsPath)
-//                    if FileManager.default.fileExists(atPath: installedLocationUrl.path) {
-//                        installStatusImgView.image = NSImage(named: "greenCheck")
-//                    } else {
-//                        installStatusImgView.image = NSImage(named: "redX")
-//                    }
-                
-
-                    //let installedLocationUrl = URL(fileURLWithPath: appMeta.proofAppExistsPath)
-                    if FileManager.default.fileExists(atPath: appMeta.proofAppExistsPath) {
-                        installStatusImgView.image = NSImage(named: "greenCheck")
-                    } else {
-                        installStatusImgView.image = NSImage(named: "redX")
+                var proofPathExists = false
+                for proofPath in appMeta.proofAppExistsPaths {
+                    if FileManager.default.fileExists(atPath: proofPath) {
+                        proofPathExists = true
+                        break
                     }
+                }
                 
-                //}
+                if proofPathExists {
+                    installStatusImgView.image = NSImage(named: "greenCheck")
+                } else {
+                    installStatusImgView.image = NSImage(named: "redX")
+                }
             }
         }
     }
@@ -516,7 +511,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                 installProgressIndicator.startAnimation(self)
             }
             
-            var iTaskOutput = ""
+            //var iTaskOutput = ""
             if let appMeta = appMetaDict[scriptToQuery] {
                 if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
                     if appMeta.installUser == "root" {
@@ -524,7 +519,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                         //iTaskOutput = runAsyncTaskAsRoot(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
                         runBgInstallsAsRoot(allInstallScriptsStr: scriptToQuery)
                     } else {
-                        iTaskOutput = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                        //iTaskOutput = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                        _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
                     }
                 }
             }
