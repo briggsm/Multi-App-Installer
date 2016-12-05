@@ -28,6 +28,9 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     
     var session: URLSession = URLSession()
     
+    var sourceFolder = UserDefaults.standard.string(forKey: "sourceFolder") ?? "/tmp"
+    var enableInstallPreApps = UserDefaults.standard.bool(forKey: "enableInstallPreApps")
+    
     //var downloadTask: URLSessionDownloadTask!
     //var downloadTaskArray = [URLSessionDownloadTask]()
     //var downloadTaskDict = [String : URLSessionDownloadTask]()
@@ -42,10 +45,12 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     var downloadStatusImgViewDict = [String : NSImageView]()
     var downloadBtnDict = [String : NSButton]()
     var downloadProgressIndicatorDict = [String : NSProgressIndicator]()
+    var isDownloadingDict = [String : Bool]()
     
     var installStatusImgViewDict = [String : NSImageView]()
     var installBtnDict = [String : NSButton]()
     var installProgressIndicatorDict = [String : NSProgressIndicator]()
+    var isInstallingDict = [String : Bool]()
     
     @IBOutlet weak var appsStackView: NSStackView!
     @IBOutlet weak var selectAllCB: NSButton!
@@ -64,6 +69,17 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //        let config = URLSessionConfiguration.default
 //        session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
 //    }
+    
+    override func viewDidAppear() {
+        printLog(str: "*viewDidAppear()*")
+        
+        sourceFolder = UserDefaults.standard.string(forKey: "sourceFolder") ?? "/tmp"
+        enableInstallPreApps = UserDefaults.standard.bool(forKey: "enableInstallPreApps")
+        
+//        refreshAllDownloadStatusImgViews()
+//        refreshAllInstallStatusImgViews()
+        refreshAllGuiViews()
+    }
     
     override func loadView() {
         // Adding this function so older OS's (eg <=10.9) can still call our viewDidLoad() function
@@ -98,7 +114,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         }
         
         // Delay a bit, THEN initEverything, so we can see the animation in the GUI.
-        // Also makes it so Winodw is ALWAYS on top of other apps when starting the app.
+        // And gives time for viewDidAppear() to execute first.
         let deadlineTime = DispatchTime.now() + 0.5
         DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
             self.initEverything()
@@ -232,6 +248,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     downloadStackView.addView(downloadImgBtnSV, in: .top)
                     downloadStackView.addView(downloadProgressIndicator, in: .top)
                     
+                    // isDownloadingDict - just so we always have the Dict to work with
+                    isDownloadingDict[scriptToQuery] = false
                     
                     
                     // Install Status Image View
@@ -287,6 +305,10 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     installStackView.spacing = 0
                     installStackView.addView(installImgBtnSV, in: .top)
                     installStackView.addView(installProgressIndicator, in: .top)
+                    
+                    // isInstallingDict - just so we always have the Dict to work with
+                    isInstallingDict[scriptToQuery] = false
+                    
                     
                     // Create Entry StackView
                     let entryStackView = NSStackView()  // Default is Horizontal
@@ -345,19 +367,19 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
             }
         }
         
-        refreshAllDownloadStatusImgViews()
-        
-        refreshAllInstallStatusImgViews()
+//        refreshAllDownloadStatusImgViews()
+//        refreshAllInstallStatusImgViews()
+        refreshAllGuiViews()
     }
     
     @IBAction func selectAllCBToggled(_ sender: NSButton) {
         let newState = selectAllCB.state
         
-        if newState == NSOnState {
-            selectAllCB.title = NSLocalizedString("De-Select All", comment: "De-select all checkbox")
-        } else {
-            selectAllCB.title = NSLocalizedString("Select All", comment: "Select all checkbox")
-        }
+//        if newState == NSOnState {
+//            selectAllCB.title = NSLocalizedString("De-Select All", comment: "De-select all checkbox")
+//        } else {
+//            selectAllCB.title = NSLocalizedString("Select All", comment: "Select all checkbox")
+//        }
         
         for entryStackView in appsStackView.views as! [NSStackView] {
             if let selectionCB = entryStackView.views.first as! NSButton? {
@@ -367,31 +389,23 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     }
     
     @IBAction func downloadSelectedBtnClicked(_ sender: NSButton) {
-        
         for entryStackView in appsStackView.views as! [NSStackView] {
             if let selectionCB = entryStackView.views.first as! NSButton? {
                 if selectionCB.state == NSOnState {
                     if let scriptToQuery = selectionCB.identifier {
                         if let downloadBtn = downloadBtnDict[scriptToQuery] {
-                            if downloadBtn.state == NSOffState {
-                                startTheDownload(scriptToQuery: scriptToQuery)
-                                downloadBtn.state = NSOnState  // "Cancel"
+                            if let appMeta = appMetaDict[scriptToQuery] {
+                                if downloadBtn.state == NSOffState {
+                                    //startTheDownload(scriptToQuery: scriptToQuery)
+                                    startDownloadTask(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
+                                    downloadBtn.state = NSOnState  // "Cancel"
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
-//        downloadSelectedBtn.isEnabled = false
-//        guard let dlUrl = URL(string: "http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg") else {
-//            printLog(str: "Unable to create URL")
-//            return
-//        }
-//        
-//        if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-//            makeDownloadCall(scriptToQuery: "teamviewer.sh", downloadUrl: dlUrl, saveToFilenamePath: "\(sourceFolderDefault)/TeamViewer Host 123.dmg")
-//        }
     }
     
     @IBAction func downloadInstallSelectedBtnClicked(_ sender: NSButton) {
@@ -399,20 +413,34 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     }
     
     @IBAction func installSelectedBtnClicked(_ sender: NSButton) {
+        // Collect all the "root" tasks - to run all at one time via AppleScript (so app asks user for PW just once)
+        // All the "user" tasks can be kicked off as we come to them.
+        
         var allInstallScriptsArr = [String]()
         
         for entryStackView in appsStackView.views as! [NSStackView] {
             if let selectionCB = entryStackView.views.first as! NSButton? {
                 if selectionCB.state == NSOnState {
                     if let scriptToQuery = selectionCB.identifier {
-                        if let appMeta = appMetaDict[scriptToQuery] {
-                            if appMeta.installUser == "root" {
-                                // Install as root - gather all together, then kick of 1 after this loop is done. (so user only enters PW once)
-                                allInstallScriptsArr.append(scriptToQuery)
-                            } else {
-                                // Install as user - kick it off right now
-                                if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                                    _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
+                        if let installBtn = installBtnDict[scriptToQuery] {
+                            if installBtn.isEnabled {
+                                if let appMeta = appMetaDict[scriptToQuery] {
+//                                    // Start the indeterminate progress indicators
+//                                    if let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
+//                                        installProgressIndicator.isIndeterminate = true
+//                                        installProgressIndicator.startAnimation(self)
+//                                    }
+                                    //installBtn.isEnabled = false
+                                    isInstallingDict[scriptToQuery] = true
+                                    refreshAllGuiViews()
+                                    
+                                    if appMeta.installUser == "root" {
+                                        // Install as root - gather all together, then kick of 1 after this loop is done. (so user only enters PW once)
+                                        allInstallScriptsArr.append(scriptToQuery)
+                                    } else {
+                                        // Install as user - kick it off right now
+                                        _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolder])
+                                    }
                                 }
                             }
                         }
@@ -434,22 +462,26 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     func downloadBtnClicked(btn: NSButton) {
         let scriptToQuery = btn.identifier ?? ""
         if !scriptToQuery.isEmpty {
-            //_ = runTask(taskFilename: scriptToQuery, arguments: ["-w"])  // -w => Write Setting
-            //fixAsRoot(allFixItScriptsStr: scriptToQuery)
-            //updateAllStatusImagesAndFixItBtns()
-            
-            if btn.state == NSOnState {
-                // === Start the download ===
-                startTheDownload(scriptToQuery: scriptToQuery)
+            if let appMeta = appMetaDict[scriptToQuery] {
+                //_ = runTask(taskFilename: scriptToQuery, arguments: ["-w"])  // -w => Write Setting
+                //fixAsRoot(allFixItScriptsStr: scriptToQuery)
+                //updateAllStatusImagesAndFixItBtns()
                 
-            } else {
-                // === Cancel the download ===
-                session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
-                    // yay! you have your tasks!
-                    for downloadTask in downloadTasks {
-                        if downloadTask.taskDescription == scriptToQuery {
-                            self.printLog(str: "Canceling Task: \(scriptToQuery)")
-                            downloadTask.cancel()
+                if btn.state == NSOnState {
+                    // === Start the download Task ===
+                    //startTheDownload(scriptToQuery: scriptToQuery)
+                    startDownloadTask(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
+                } else {
+                    // === Cancel the download ===
+                    session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
+                        // yay! you have your tasks!
+                        for downloadTask in downloadTasks {
+                            if downloadTask.taskDescription == scriptToQuery {
+                                self.printLog(str: "Canceling Task: \(scriptToQuery)")
+                                downloadTask.cancel()
+                                self.isDownloadingDict[scriptToQuery] = false
+                                self.refreshAllGuiViews()
+                            }
                         }
                     }
                 }
@@ -457,16 +489,103 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         }
     }
     
+    func refreshAllGuiViews() {
+        
+        for (scriptToQuery, downloadStatusImgView) in downloadStatusImgViewDict {
+            if let appMeta = appMetaDict[scriptToQuery], let downloadBtn = downloadBtnDict[scriptToQuery], let downloadProgressIndicator = downloadProgressIndicatorDict[scriptToQuery], let installStatusImgView = installStatusImgViewDict[scriptToQuery], let installBtn = installBtnDict[scriptToQuery], let isDownloading = isDownloadingDict[scriptToQuery], let isInstalling = isInstallingDict[scriptToQuery] {
+                
+                // === refreshAllDownloadStatusImgViews ===
+                
+                // Download Status ImageView
+                let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
+                if FileManager.default.fileExists(atPath: destinationURLForFile.path) {
+                    downloadStatusImgView.image = NSImage(named: "greenCheck")
+                } else {
+                    downloadStatusImgView.image = NSImage(named: "redX")
+                }
+                
+                // Download Btn
+                //  !!!Automatically taken care of because it's a toggle button.
+                //if let downloadBtn = downloadBtnDict[scriptToQuery] {
+                if isDownloading {
+                    downloadBtn.state = NSOnState  // "Cancel"
+                } else {
+                    downloadBtn.state = NSOffState  // "Download"
+                }
+                //}
+                
+                // Download Progress Indicator
+                //  !!!Automatically taken care of by task/session delegate
+                //if let downloadProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
+                if isDownloading {
+                    // Automatically taken care of by task/session delegate
+                } else {
+                    downloadProgressIndicator.doubleValue = 0.0
+                }
+                //}
+                
+                
+                
+                // === refreshAllInstallStatusImgViews ===
+                
+                // Install Status ImageView
+                var proofPathExists = false
+                for proofPath in appMeta.proofAppExistsPaths {
+                    if FileManager.default.fileExists(atPath: proofPath) {
+                        proofPathExists = true
+                        break
+                    }
+                }
+                if proofPathExists {
+                    installStatusImgView.image = NSImage(named: "greenCheck")
+                } else {
+                    installStatusImgView.image = NSImage(named: "redX")
+                }
+                
+                // Install Btn
+                /*
+                if isInstalling {
+                    installBtn.isEnabled = false
+                } else if downloadStatusImgView.image?.name() == "redX" {
+                    installBtn.isEnabled = false
+                } else if isDownloading {
+                    installBtn.isEnabled = false
+                } else {
+                    installBtn.isEnabled = enableInstallPreApps
+                }
+                */
+                if isInstalling || isDownloading || downloadStatusImgView.image?.name() == "redX" {
+                    installBtn.isEnabled = false
+                } else {
+                    installBtn.isEnabled = enableInstallPreApps
+                }
+                
+                // Install Progress Indicator
+                if let isInstalling = isInstallingDict[scriptToQuery], let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
+                    if isInstalling {
+                        // Start the indeterminate progress indicators
+                        installProgressIndicator.isIndeterminate = true
+                        installProgressIndicator.startAnimation(self)
+                    } else {
+                        // Stop the indeterminate progress indicators
+                        installProgressIndicator.stopAnimation(self)
+                        installProgressIndicator.isIndeterminate = false
+                        installProgressIndicator.doubleValue = 0.0
+                    }
+                }
+            }
+        }
+    }
+    
+    /*
     func refreshAllDownloadStatusImgViews() {
         for (scriptToQuery, downloadStatusImgView) in downloadStatusImgViewDict {
             if let appMeta = appMetaDict[scriptToQuery] {
-                if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(appMeta.saveAsFilename)")
-                    if FileManager.default.fileExists(atPath: destinationURLForFile.path) {
-                        downloadStatusImgView.image = NSImage(named: "greenCheck")
-                    } else {
-                        downloadStatusImgView.image = NSImage(named: "redX")
-                    }
+                let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
+                if FileManager.default.fileExists(atPath: destinationURLForFile.path) {
+                    downloadStatusImgView.image = NSImage(named: "greenCheck")
+                } else {
+                    downloadStatusImgView.image = NSImage(named: "redX")
                 }
             }
         }
@@ -474,7 +593,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     
     func refreshAllInstallStatusImgViews() {
         for (scriptToQuery, installStatusImgView) in installStatusImgViewDict {
-            if let appMeta = appMetaDict[scriptToQuery] {
+            if let appMeta = appMetaDict[scriptToQuery], let installBtn = installBtnDict[scriptToQuery] {
                 var proofPathExists = false
                 for proofPath in appMeta.proofAppExistsPaths {
                     if FileManager.default.fileExists(atPath: proofPath) {
@@ -485,43 +604,56 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                 
                 if proofPathExists {
                     installStatusImgView.image = NSImage(named: "greenCheck")
+                    installBtn.isEnabled = enableInstallPreApps
                 } else {
                     installStatusImgView.image = NSImage(named: "redX")
+                    installBtn.isEnabled = true
+                }
+                
+                // Override - If install is currently running, install btn should never be enabled.
+                if let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
+                    if installProgressIndicator.isIndeterminate {
+                        installBtn.isEnabled = false
+                    }
+                }
+                
+                // Override - If app has not been DOWNLOADED yet, then disable installBtn
+                if let downloadStatusImgView = downloadStatusImgViewDict[scriptToQuery] {
+                    if downloadStatusImgView.image?.name() == "redX" {
+                        installBtn.isEnabled = false
+                    }
                 }
             }
         }
     }
+    */
     
+    /*
     func startTheDownload(scriptToQuery: String) {
         if let appMeta = appMetaDict[scriptToQuery] {
-            makeDownloadCall(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
+            startDownloadTask(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
         }
     }
-
-    func installBtnClicked(btn: NSButton) {
-        let scriptToQuery = btn.identifier ?? ""
+    */
+    
+    func installBtnClicked(installBtn: NSButton) {
+        let scriptToQuery = installBtn.identifier ?? ""
         if !scriptToQuery.isEmpty {
-            //_ = runTask(taskFilename: scriptToQuery, arguments: ["-w"])  // -w => Write Setting
-            //fixAsRoot(allFixItScriptsStr: scriptToQuery)
-            //updateAllStatusImagesAndFixItBtns()
 
-            // Start the indeterminate progress indicators
-            if let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
-                installProgressIndicator.isIndeterminate = true
-                installProgressIndicator.startAnimation(self)
-            }
+//            // Start the indeterminate progress indicators
+//            if let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
+//                installProgressIndicator.isIndeterminate = true
+//                installProgressIndicator.startAnimation(self)
+//            }
+            //installBtn.isEnabled = false
+            isInstallingDict[scriptToQuery] = true
+            refreshAllGuiViews()
             
-            //var iTaskOutput = ""
             if let appMeta = appMetaDict[scriptToQuery] {
-                if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    if appMeta.installUser == "root" {
-                        
-                        //iTaskOutput = runAsyncTaskAsRoot(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
-                        runBgInstallsAsRoot(allInstallScriptsStr: scriptToQuery)
-                    } else {
-                        //iTaskOutput = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
-                        _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolderDefault])
-                    }
+                if appMeta.installUser == "root" {
+                    runBgInstallsAsRoot(allInstallScriptsStr: scriptToQuery)
+                } else {
+                    _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolder])
                 }
             }
         }
@@ -638,33 +770,14 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         return userOsVer
     }
     
-    //func makeDownloadCall() {
-    //func makeDownloadCall(downloadUrl: URL, saveToFilenamePath: String) {
-    //func makeDownloadCall(scriptToQuery: String, downloadUrl: URL, saveToFilenamePath: String) {
-    func makeDownloadCall(scriptToQuery: String, downloadUrl: URL) {
-        // Set up the URL request
-        //let todoEndpoint: String = "https://jsonplaceholder.typicode.com/todos/1"
-        //let todoEndpoint: String = "https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg"
-        //let todoEndpoint: String = "http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg"
-        
-//        guard let url = URL(string: todoEndpoint) else {
-//            print("Error: cannot create URL")
-//            return
-//        }
+    //func makeDownloadCall(scriptToQuery: String, downloadUrl: URL) {
+    func startDownloadTask(scriptToQuery: String, downloadUrl: URL) {
         let urlRequest = URLRequest(url: downloadUrl)
-        
-        // set up the session
-//        let config = URLSessionConfiguration.default
-//        //let session = URLSession(configuration: config)
-//        session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
-        
         let downloadTask = session.downloadTask(with: urlRequest)
         downloadTask.taskDescription = scriptToQuery
-
-        //downloadTaskDict[scriptToQuery] = downloadTask
-        //printLog(str: "current state of downloadTaskDict: \(downloadTaskDict)")
-
         downloadTask.resume()
+        isDownloadingDict[scriptToQuery] = true
+        refreshAllGuiViews()  // I think not necessary here, but won't hurt.
     }
     
     //MARK: URLSessionDownloadDelegate
@@ -676,41 +789,36 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         printLog(str: "didFinishDownloadingTo: \(location)")
         
         let fileManager = FileManager()  /////////?????????????? don't we need FileManager().default ?????????????????
-//        var sourceFilePath: String
-//        if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-//            sourceFilePath = sourceFolderDefault
-//        } else {
-//            sourceFilePath = "/tmp"
-//        }
         
         if let scriptToQuery = downloadTask.taskDescription {
             if let appMeta = appMetaDict[scriptToQuery] {
-
+                
                 //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/GiMp.sh")
                 //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/TeamViewerHost.dmg")
-                if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-                    let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolderDefault)/\(appMeta.saveAsFilename)")
-                    printLog(str: "destUrlForFile: \(destinationURLForFile)")
-                    
-                    if fileManager.fileExists(atPath: destinationURLForFile.path){
-                        printLog(str: "File already exists! Removing it!")
-                        do {
-                            try fileManager.removeItem(at: destinationURLForFile)
-                        }catch{
-                            print("An error occurred while removing file at destination url")
-                        }
-                    }
-                    
-                    // Move item from temp dir to desination dir
-                    printLog(str: "Moving item from temp to destination")
+                let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
+                printLog(str: "destUrlForFile: \(destinationURLForFile)")
+                
+                if fileManager.fileExists(atPath: destinationURLForFile.path){
+                    printLog(str: "File already exists! Removing it!")
                     do {
-                        try fileManager.moveItem(at: location, to: destinationURLForFile)
+                        try fileManager.removeItem(at: destinationURLForFile)
                     }catch{
-                        print("An error occurred while moving file to destination url")
+                        print("An error occurred while removing file at destination url")
                     }
-                    
-                    refreshAllDownloadStatusImgViews()
                 }
+                
+                // Move item from temp dir to desination dir
+                printLog(str: "Moving item from temp to destination")
+                do {
+                    try fileManager.moveItem(at: location, to: destinationURLForFile)
+                }catch{
+                    print("An error occurred while moving file to destination url")
+                }
+                
+//                refreshAllDownloadStatusImgViews()
+//                refreshAllInstallStatusImgViews()  // Because "Install" button enabled state depends on downloadStateImgView.image
+                isDownloadingDict[scriptToQuery] = false
+                refreshAllGuiViews()
             }
         }
     }
@@ -738,24 +846,29 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     didCompleteWithError error: Error?){
         //downloadTask = nil  //????????????????
         //progressView.doubleValue = 0.0
-        downloadSelectedBtn.isEnabled = true
+        //downloadSelectedBtn.isEnabled = true
         if (error != nil) {
             print("taskDidCompleteWithError: \(error!.localizedDescription)")
         }else{
             print("The task finished transferring data successfully")
         }
         
-        // Reset relevant Progress Indicator
+//        // Reset relevant Progress Indicator
+//        if let scriptToQuery = task.taskDescription {
+//            if let relevantProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
+//                relevantProgressIndicator.doubleValue = 0.0
+//            }
+//            if let relevantDownloadBtn = downloadBtnDict[scriptToQuery] {
+//                relevantDownloadBtn.state = NSOffState  // "Download"
+//            }
+//        }
+        
         if let scriptToQuery = task.taskDescription {
-            if let relevantProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
-                relevantProgressIndicator.doubleValue = 0.0
-            }
-            if let relevantDownloadBtn = downloadBtnDict[scriptToQuery] {
-                relevantDownloadBtn.state = NSOffState  // "Download"
-            }
+            isDownloadingDict[scriptToQuery] = false
+            refreshAllGuiViews()
         }
     }
-        
+    
     func runSyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
         // Note: Purposely running in Main thread because it's not going take that long to run each of our tasks
         
@@ -793,8 +906,13 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         //printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
         printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0])")
         
-        
-        
+//        if arguments[0] == "-i" {
+//            if let installProgressIndicator = self.installProgressIndicatorDict[scriptToQuery] {
+//                installProgressIndicator.isIndeterminate = true
+//                installProgressIndicator.startAnimation(self)
+//            }
+//            self.refreshAllInstallStatusImgViews()
+//        }
         
         // Setup & Launch our process Asynchronously
         let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
@@ -830,12 +948,15 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //                    self.spinner.stopAnimation(self)
 //                    self.isRunning = false
                     if arguments[0] == "-i" {
-                        if let installProgressIndicator = self.installProgressIndicatorDict[scriptToQuery] {
-                            installProgressIndicator.stopAnimation(self)
-                            installProgressIndicator.isIndeterminate = false
-                            installProgressIndicator.doubleValue = 0
-                        }
-                        self.refreshAllInstallStatusImgViews()
+//                        if let installProgressIndicator = self.installProgressIndicatorDict[scriptToQuery] {
+//                            installProgressIndicator.stopAnimation(self)
+//                            installProgressIndicator.isIndeterminate = false
+//                            installProgressIndicator.doubleValue = 0
+//                        }
+//                        //self.refreshAllInstallStatusImgViews()
+                        
+                        self.isInstallingDict[scriptToQuery] = false
+                        self.refreshAllGuiViews()
                     }
                 })
                 
@@ -872,30 +993,32 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 //    }
     
     func runBgInstallsAsRoot(allInstallScriptsStr: String) {
+        // ?????????????? Run in Background thread ???????????????
+        printLog(str: "----------")
+        printLog(str: "runInstallsAsRoot()")
+
+        // AppleScript
+        let appleScriptStr = "do shell script \"./runIs.sh '\(sourceFolder)' \(allInstallScriptsStr)\" with administrator privileges"
+        //let appleScriptStr = "do shell script \"./runIs.sh \(sourceFolder) \(allInstallScriptsStr)\" with administrator privileges"
+        printLog(str: "appleScriptStr: \(appleScriptStr)")
         
-        if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
-            printLog(str: "----------")
-            printLog(str: "runInstallsAsRoot()")
+        // Run AppleScript
+        var asError: NSDictionary?
+        if let asObject = NSAppleScript(source: appleScriptStr) {
+            let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
             
-            
-            
-            // AppleScript
-            let appleScriptStr = "do shell script \"./runIs.sh '\(sourceFolderDefault)' \(allInstallScriptsStr)\" with administrator privileges"
-            //let appleScriptStr = "do shell script \"./runIs.sh \(sourceFolderDefault) \(allInstallScriptsStr)\" with administrator privileges"
-            printLog(str: "appleScriptStr: \(appleScriptStr)")
-            
-            // Run AppleScript
-            var asError: NSDictionary?
-            if let asObject = NSAppleScript(source: appleScriptStr) {
-                let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
-                
-                if let err = asError {
-                    printLog(str: "AppleScript Error: \(err)")
-                } else {
-                    printLog(str: asOutput.stringValue ?? "Note!: AS Output has 'nil' for stringValue")
-                }
+            if let err = asError {
+                printLog(str: "AppleScript Error: \(err)")
+            } else {
+                printLog(str: asOutput.stringValue ?? "Note!: AS Output has 'nil' for stringValue")
             }
-            printLog(str: "----------")
+            
+            // For each of the scripts, say that we're done installing
+            let allInstallScriptsArr = allInstallScriptsStr.components(separatedBy: " ")
+            for scriptToQuery in allInstallScriptsArr {
+                isInstallingDict[scriptToQuery] = false
+            }
         }
+        printLog(str: "----------")
     }
 }
