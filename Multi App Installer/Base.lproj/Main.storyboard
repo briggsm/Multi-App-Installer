@@ -754,7 +754,7 @@
                                     </stackView>
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="BNE-ja-JPF">
                                         <rect key="frame" x="-2" y="276" width="438" height="17"/>
-                                        <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" title="Note: Downloads download to this folder. Installs install from this folder." id="AZP-D6-Oe1">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Note: Downloads download to this folder. Installs install from this folder." id="AZP-D6-Oe1">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

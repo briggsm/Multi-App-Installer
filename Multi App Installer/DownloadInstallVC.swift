@@ -190,6 +190,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     selectionCB.state = NSOnState
                     selectionCB.identifier = scriptToQuery
                     //selectionCBDict[scriptToQuery] = selectionCB
+                    selectionCB.setContentHuggingPriority(245, for: .horizontal)
                     
                     // Download Status Image View
                     var downloadStatusImgView:NSImageView
