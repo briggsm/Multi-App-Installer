@@ -26,10 +26,8 @@ class DownloadInstallVC: NSViewController {
     var sourceFolder = UserDefaults.standard.string(forKey: "sourceFolder") ?? "/tmp"
     var enableInstallPreApps = UserDefaults.standard.bool(forKey: "enableInstallPreApps")
     
+
     var appMetaDict = [String : AppMeta]()
-    
-    // !!!!!!!!!!!!!!! Note: check eventually if I'm actually using all of these !!!!!!!!!!!!!!!!!!!!!1
-    var selectionCBDict = [String : NSButton]()
     
     var downloadStatusImgViewDict = [String : NSImageView]()
     var downloadBtnDict = [String : NSButton]()
@@ -635,33 +633,38 @@ class DownloadInstallVC: NSViewController {
     }
     
     func runBgInstallsAsRoot(allInstallScriptsStr: String) {
-        // ?????????????? Run in Background thread ???????????????
         printLog(str: "=+=+=+=+=+")
         printLog(str: "runInstallsAsRoot()")
 
-        // AppleScript
-        let appleScriptStr = "do shell script \"./runIs.sh '\(sourceFolder)' \(allInstallScriptsStr)\" with administrator privileges"
-        printLog(str: "appleScriptStr: \(appleScriptStr)")
+        let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
         
-        // Run AppleScript
-        var asError: NSDictionary?
-        if let asObject = NSAppleScript(source: appleScriptStr) {
-            let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
+        taskQueue.async {
+            // AppleScript
+            let appleScriptStr = "do shell script \"./runIs.sh '\(self.sourceFolder)' \(allInstallScriptsStr)\" with administrator privileges"
+            self.printLog(str: "appleScriptStr: \(appleScriptStr)")
             
-            if let err = asError {
-                printLog(str: "AppleScript Error: \(err)")
-            } else {
-                printLog(str: asOutput.stringValue ?? "Note!: AS Output has 'nil' for stringValue")
+            // Run AppleScript
+            var asError: NSDictionary?
+            if let asObject = NSAppleScript(source: appleScriptStr) {
+                let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
+                
+                if let err = asError {
+                    self.printLog(str: "AppleScript Error: \(err)")
+                } else {
+                    self.printLog(str: asOutput.stringValue ?? "Note!: AS Output has 'nil' for stringValue")
+                }
+                
+                // For each of the scripts, say that we're done installing
+                let allInstallScriptsArr = allInstallScriptsStr.components(separatedBy: " ")
+                for scriptToQuery in allInstallScriptsArr {
+                    self.isInstallingDict[scriptToQuery] = false
+                }
+                DispatchQueue.main.async(execute: {
+                    self.refreshAllGuiViews()
+                })
             }
-            
-            // For each of the scripts, say that we're done installing
-            let allInstallScriptsArr = allInstallScriptsStr.components(separatedBy: " ")
-            for scriptToQuery in allInstallScriptsArr {
-                isInstallingDict[scriptToQuery] = false
-            }
-            refreshAllGuiViews()
+            self.printLog(str: "=-=-=-=-=-")
         }
-        printLog(str: "=-=-=-=-=-")
     }
 }
 

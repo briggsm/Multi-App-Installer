@@ -41,8 +41,8 @@ if [ "$1" == "-i" ]; then
 			cp $2/TeamViewerSettings/com.teamviewer.teamviewer.preferences.plist /Library/Preferences/
 			cp $2/TeamViewerSettings/com.teamviewer.teamviewer.plist /Library/LaunchAgents/
 			cp $2/TeamViewerSettings/com.teamviewer.teamviewer_desktop.plist /Library/LaunchAgents/
+            echo "Finished Copying Settings"
 		fi
-		echo "Finished Copying Settings"
 	fi
 	exit 0
 fi
