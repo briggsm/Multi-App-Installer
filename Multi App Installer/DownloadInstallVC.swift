@@ -50,7 +50,7 @@ class DownloadInstallVC: NSViewController {
     @IBOutlet weak var progressView: NSProgressIndicator!
     
     override func viewDidAppear() {
-        printLog(str: "*viewDidAppear()*")
+        //printLog(str: "*viewDidAppear()*")
         
         sourceFolder = UserDefaults.standard.string(forKey: "sourceFolder") ?? "/tmp"
         enableInstallPreApps = UserDefaults.standard.bool(forKey: "enableInstallPreApps")
@@ -295,7 +295,7 @@ class DownloadInstallVC: NSViewController {
                 entryStackView.addView(installStackView, in: .leading)
                 
                 // Add our entryStackView to the appsStackView
-                appsStackView.addView(entryStackView, in: NSStackViewGravity.top)
+                appsStackView.addView(entryStackView, in: .top)
                 
                 // Re-center the window on the screen
                 //self.view.window?.center()

@@ -14,15 +14,14 @@ class SettingsVC: NSViewController {
     @IBOutlet weak var sourceFolderTF: NSTextField!
     @IBOutlet weak var enableInstallPreAppsCB: NSButton!  // Enable Install Button for Already (Pre) Installed Apps
     
+    override func viewWillDisappear() {
+        //print("**view will DISAPPEAR**")
+        // Save sourceFolderTF to UserDefaults
+        UserDefaults.standard.setValue(sourceFolderTF.stringValue, forKey: "sourceFolder")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        // Init scriptsFolderTF
-//        if let scriptsFolderDefault = UserDefaults.standard.string(forKey: "scriptsFolder") {
-//            scriptsFolderTF.stringValue = scriptsFolderDefault
-//        } else {
-//            scriptsFolderTF.stringValue = "/tmp"
-//        }
         
         // Init sourceFolderTF
         if let sourceFolderDefault = UserDefaults.standard.string(forKey: "sourceFolder") {
@@ -37,21 +36,6 @@ class SettingsVC: NSViewController {
         enableInstallPreAppsCB.state = enableInstallPreAppsDefault ? NSOnState : NSOffState
     }
     
-//    @IBAction func scriptsFolderBrowseBtnClicked(_ sender: NSButton) {
-//        let openPanel = NSOpenPanel()
-//        openPanel.title = "Choose a Folder"
-//        openPanel.allowsMultipleSelection = false
-//        openPanel.canChooseDirectories = true
-//        openPanel.canCreateDirectories = true
-//        openPanel.canChooseFiles = false
-//        if (openPanel.runModal() == NSModalResponseOK) {
-//            self.scriptsFolderTF.stringValue = openPanel.urls[0].path
-//            
-//            // Save to UserDefaults
-//            UserDefaults.standard.setValue(scriptsFolderTF.stringValue, forKey: "scriptsFolder")
-//        }
-//    }
-    
     @IBAction func sourceFolderBrowseBtnClicked(_ sender: NSButton) {
         let openPanel = NSOpenPanel()
         openPanel.title = "Choose a Folder"
@@ -61,9 +45,6 @@ class SettingsVC: NSViewController {
         openPanel.canChooseFiles = false
         if (openPanel.runModal() == NSModalResponseOK) {
             self.sourceFolderTF.stringValue = openPanel.urls[0].path
-            
-            // Save to UserDefaults
-            UserDefaults.standard.setValue(sourceFolderTF.stringValue, forKey: "sourceFolder")
         }
     }
     
@@ -71,5 +52,4 @@ class SettingsVC: NSViewController {
         // Save to UserDefaults
         UserDefaults.standard.setValue(sender.state == NSOnState ? true : false, forKey: "enableInstallPreApps")
     }
-    
 }
