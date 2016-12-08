@@ -22,7 +22,16 @@ if [ "$1" == "-appMeta" ]; then
 	# (4) - Install as root or user (text is just "root" or "user" [w/o the quotes])
 	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
-	echo "Gimp||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
+    # Get Localized Description
+	if [ "$2" == "tr" ]; then
+        desc="[tr]Gimp"
+	elif [ "$2" == "ru" ]; then
+		desc="[ru]Gimp"
+	else
+		desc="Gimp"
+    fi
+    
+	echo "$desc||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
 fi
 
 # Install

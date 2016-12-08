@@ -22,7 +22,16 @@ if [ "$1" == "-appMeta" ]; then
 	# (4) - Install as root or user (text is just "root" or "user" [w/o the quotes])
 	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
-	echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewerHost.app|/Applications/TeamViewer.app"
+	# Get Localized Description
+	if [ "$2" == "tr" ]; then
+        desc="[tr]TeamViewer Host"
+	elif [ "$2" == "ru" ]; then
+		desc="[ru]TeamViewer Host"
+	else
+		desc="TeamViewer Host"
+    fi
+
+	echo "$desc||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewerHost.app|/Applications/TeamViewer.app"
 fi
 
 # Install
