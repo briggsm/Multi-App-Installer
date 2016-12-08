@@ -708,14 +708,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="751" height="365"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E1z-5m-fdj">
+                            <stackView orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="E1z-5m-fdj">
                                 <rect key="frame" x="20" y="20" width="711" height="325"/>
                                 <beginningViews>
                                     <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZpP-Km-oZX">
                                         <rect key="frame" x="0.0" y="303" width="711" height="22"/>
                                         <beginningViews>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GzL-gV-l1E">
-                                                <rect key="frame" x="-2" y="2.5" width="93" height="17"/>
+                                                <rect key="frame" x="-2" y="3" width="93" height="17"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Source Folder:" id="OUg-sL-AOK">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -731,7 +731,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rB0-Zt-UVL">
-                                                <rect key="frame" x="621" y="-6.5" width="96" height="32"/>
+                                                <rect key="frame" x="621" y="-6" width="96" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Browse..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gO9-zv-HFF">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -763,7 +763,7 @@
                                 </beginningViews>
                                 <middleViews>
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tba-Fj-Ghm">
-                                        <rect key="frame" x="-2" y="153.5" width="314" height="18"/>
+                                        <rect key="frame" x="-2" y="154" width="314" height="18"/>
                                         <buttonCell key="cell" type="check" title="Enable &quot;Install&quot; button for already installed Apps" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WyI-Qf-vhE">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -911,7 +911,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <stackView orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f9e-4E-gbQ">
+                            <stackView orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="f9e-4E-gbQ">
                                 <rect key="frame" x="20" y="203" width="345" height="205"/>
                             </stackView>
                         </subviews>
