@@ -144,6 +144,9 @@ class DownloadInstallVC: NSViewController {
                 } else {
                     // Fallback on earlier versions
                     selectionCB = NSButton()
+                    selectionCB.title = appMeta.appDescription
+                    selectionCB.setButtonType(.switch)
+                    selectionCB.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 }
                 selectionCB.state = NSOnState
                 selectionCB.identifier = scriptToQuery
@@ -157,10 +160,9 @@ class DownloadInstallVC: NSViewController {
                     // Fallback on earlier versions
                     downloadStatusImgView = NSImageView()
                     downloadStatusImgView.image = NSImage(named: "greyQM")
-                    //downloadStatusImgView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                    downloadStatusImgView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 }
                 downloadStatusImgView.identifier = scriptToQuery
-                //downloadStatusImgView.translatesAutoresizingMaskIntoConstraints = true
                 downloadStatusImgViewDict[scriptToQuery] = downloadStatusImgView
                 
                 // Download Button
@@ -176,12 +178,11 @@ class DownloadInstallVC: NSViewController {
                     downloadBtn.action = #selector(downloadBtnClicked)
                     downloadBtn.bezelStyle = NSBezelStyle.rounded
                     downloadBtn.font = NSFont.systemFont(ofSize: 13.0)
-                    //downloadBtn.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                    downloadBtn.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 }
                 downloadBtn.setButtonType(.toggle)
                 downloadBtn.alternateTitle = NSLocalizedString("Cancel", comment: "cancel download button")
                 downloadBtn.identifier = scriptToQuery
-                //downloadBtn.translatesAutoresizingMaskIntoConstraints = true  // NSStackView bug for 10.9 & 10.10
                 downloadBtnDict[scriptToQuery] = downloadBtn
                 
                 // Download ImgBtn Stack View
@@ -198,6 +199,7 @@ class DownloadInstallVC: NSViewController {
                 
                 //                    downloadImgBtnSV.addSubview(downloadStatusImgView)
                 //                    downloadImgBtnSV.addSubview(downloadBtn)
+                downloadImgBtnSV.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 
                 // Download Progress
                 let downloadProgressIndicator = NSProgressIndicator()
@@ -206,12 +208,14 @@ class DownloadInstallVC: NSViewController {
                 downloadProgressIndicator.minValue = 0
                 downloadProgressIndicator.maxValue = 100
                 downloadProgressIndicator.doubleValue = 0
+                downloadProgressIndicator.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 downloadProgressIndicatorDict[scriptToQuery] = downloadProgressIndicator
                 
                 // Download Stack View
                 let downloadStackView = NSStackView()
                 downloadStackView.orientation = .vertical
                 downloadStackView.spacing = 0
+                downloadStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 downloadStackView.addView(downloadImgBtnSV, in: .top)
                 downloadStackView.addView(downloadProgressIndicator, in: .top)
                 
@@ -227,10 +231,9 @@ class DownloadInstallVC: NSViewController {
                     // Fallback on earlier versions
                     installStatusImgView = NSImageView()
                     installStatusImgView.image = NSImage(named: "greyQM")
-                    //installStatusImgView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                    installStatusImgView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 }
                 installStatusImgView.identifier = scriptToQuery
-                //installStatusImgView.translatesAutoresizingMaskIntoConstraints = true
                 installStatusImgViewDict[scriptToQuery] = installStatusImgView
                 
                 // Install Button
@@ -245,7 +248,7 @@ class DownloadInstallVC: NSViewController {
                     installBtn.action = #selector(installBtnClicked)
                     installBtn.bezelStyle = NSBezelStyle.rounded
                     installBtn.font = NSFont.systemFont(ofSize: 13.0)
-                    //installBtn.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                    installBtn.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 }
                 installBtn.identifier = scriptToQuery
                 installBtnDict[scriptToQuery] = installBtn
@@ -253,6 +256,7 @@ class DownloadInstallVC: NSViewController {
                 // Install ImgBtn Stack View
                 let installImgBtnSV = NSStackView()
                 installImgBtnSV.spacing = 10
+                installImgBtnSV.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 installImgBtnSV.addView(installStatusImgView, in: .leading)
                 installImgBtnSV.addView(installBtn, in: .leading)
                 
@@ -263,16 +267,18 @@ class DownloadInstallVC: NSViewController {
                 installProgressIndicator.minValue = 0
                 installProgressIndicator.maxValue = 100
                 installProgressIndicator.doubleValue = 0
+                installProgressIndicator.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 installProgressIndicatorDict[scriptToQuery] = installProgressIndicator
                 
                 // Install Stack View
                 let installStackView = NSStackView()
                 installStackView.orientation = .vertical
                 installStackView.spacing = 0
+                installStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 installStackView.addView(installImgBtnSV, in: .top)
                 installStackView.addView(installProgressIndicator, in: .top)
                 
-                // isInstallingDict - just so we always have the Dict to work with
+                // Set isInstallingDict - just so we always have the Dict to work with
                 isInstallingDict[scriptToQuery] = false
                 
                 
@@ -280,12 +286,11 @@ class DownloadInstallVC: NSViewController {
                 let entryStackView = NSStackView()  // Default is Horizontal
                 entryStackView.alignment = .centerY
                 entryStackView.spacing = 10
-                //entryStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                entryStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 
                 
                 // Add all our components to the entry stack view
                 entryStackView.addView(selectionCB, in: .leading)
-                
                 entryStackView.addView(downloadStackView, in: .leading)
                 entryStackView.addView(installStackView, in: .leading)
                 
