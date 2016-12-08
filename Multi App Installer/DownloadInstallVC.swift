@@ -123,7 +123,7 @@ class DownloadInstallVC: NSViewController {
         for scriptToQuery in scriptsToQuery {
             
             // Add to appMetaDict. Break out of loop if anything looks wrong.
-            let appMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-appMeta"])
+            let appMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-appMeta", getCurrLangIso()])
             if appMetaTaskOutput != "" {
                 let appMetaArr = appMetaTaskOutput.components(separatedBy: "||")
                 
@@ -295,6 +295,17 @@ class DownloadInstallVC: NSViewController {
         }
         
         refreshAllGuiViews()
+        
+        performSegue(withIdentifier: "LanguageChooserVC", sender: self)
+    }
+    
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        //if segue.destinationViewController is LanguageChooserVC {
+        if segue.destinationController is LanguageChooserVC {
+            let langChooserVC = segue.destinationController as! LanguageChooserVC
+            //dir2VC.delegate = self
+            //dir2VC.title = dirLevel2Title
+        }
     }
     
     // MARK: IB Actions
@@ -661,6 +672,17 @@ class DownloadInstallVC: NSViewController {
         } catch {
             printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
         }
+    }
+    
+    func getCurrLangIso() -> String {
+        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! Array<String>
+        
+        var currLangIso = currLangArr[0]
+        
+        // Chop off everything except 1st two characters
+        currLangIso = currLangIso.substring(to: currLangIso.index(currLangIso.startIndex, offsetBy: 2))
+        
+        return currLangIso
     }
 }
 
