@@ -436,7 +436,11 @@ class DownloadInstallVC: NSViewController {
                 if isInstalling || isDownloading || downloadStatusImgView.image?.name() == "redX" {
                     installBtn.isEnabled = false
                 } else {
-                    installBtn.isEnabled = enableInstallPreApps
+                    if installStatusImgView.image?.name() == "redX" {
+                        installBtn.isEnabled = true
+                    } else {
+                        installBtn.isEnabled = enableInstallPreApps
+                    }
                 }
                 
                 // Install Progress Indicator
@@ -655,6 +659,7 @@ class DownloadInstallVC: NSViewController {
             for scriptToQuery in allInstallScriptsArr {
                 isInstallingDict[scriptToQuery] = false
             }
+            refreshAllGuiViews()
         }
         printLog(str: "=-=-=-=-=-")
     }
