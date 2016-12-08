@@ -20,7 +20,7 @@ struct AppMeta {
     var proofAppExistsPaths: [String]
 }
 
-class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
+class DownloadInstallVC: NSViewController {
 
     //let appsToQuery = ["gimp.sh", "teamviewer.sh"]
     var scriptsDirPath: String = ""
@@ -159,7 +159,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
 
                 // TODO - maybe add some sanity checks here...
                 guard let downloadUrl = URL(string: appMetaArr[1]) else {
-                    print("Error: cannot create URL!")
+                    printLog(str: "Error: cannot create URL!")
                     //return
                     break  // out of for loop ??????????????????
                 }
@@ -232,6 +232,15 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                     downloadImgBtnSV.spacing = 10
                     downloadImgBtnSV.addView(downloadStatusImgView, in: .leading)
                     downloadImgBtnSV.addView(downloadBtn, in: .leading)
+//                    if #available(OSX 10.11, *) {
+//                        downloadImgBtnSV.addArrangedSubview(downloadStatusImgView)
+//                        downloadImgBtnSV.addArrangedSubview(downloadBtn)
+//                    } else {
+//                        // Fallback on earlier versions
+//                    }
+                    
+//                    downloadImgBtnSV.addSubview(downloadStatusImgView)
+//                    downloadImgBtnSV.addSubview(downloadBtn)
                     
                     // Download Progress
                     let downloadProgressIndicator = NSProgressIndicator()
@@ -478,6 +487,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                         // yay! you have your tasks!
                         for downloadTask in downloadTasks {
                             if downloadTask.taskDescription == scriptToQuery {
+                                self.printLog(str: "----------")
                                 self.printLog(str: "Canceling Task: \(scriptToQuery)")
                                 downloadTask.cancel()
                                 self.isDownloadingDict[scriptToQuery] = false
@@ -781,98 +791,12 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
         refreshAllGuiViews()  // I think not necessary here, but won't hurt.
     }
     
-    //MARK: URLSessionDownloadDelegate
-    // 1
-    func urlSession(_ session: URLSession,
-                    downloadTask: URLSessionDownloadTask,
-                    didFinishDownloadingTo location: URL){
-        
-        printLog(str: "didFinishDownloadingTo: \(location)")
-        
-        let fileManager = FileManager()  /////////?????????????? don't we need FileManager().default ?????????????????
-        
-        if let scriptToQuery = downloadTask.taskDescription {
-            if let appMeta = appMetaDict[scriptToQuery] {
-                
-                //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/GiMp.sh")
-                //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/TeamViewerHost.dmg")
-                let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
-                printLog(str: "destUrlForFile: \(destinationURLForFile)")
-                
-                if fileManager.fileExists(atPath: destinationURLForFile.path){
-                    printLog(str: "File already exists! Removing it!")
-                    do {
-                        try fileManager.removeItem(at: destinationURLForFile)
-                    }catch{
-                        print("An error occurred while removing file at destination url")
-                    }
-                }
-                
-                // Move item from temp dir to desination dir
-                printLog(str: "Moving item from temp to destination")
-                do {
-                    try fileManager.moveItem(at: location, to: destinationURLForFile)
-                }catch{
-                    print("An error occurred while moving file to destination url")
-                }
-                
-//                refreshAllDownloadStatusImgViews()
-//                refreshAllInstallStatusImgViews()  // Because "Install" button enabled state depends on downloadStateImgView.image
-                isDownloadingDict[scriptToQuery] = false
-                refreshAllGuiViews()
-            }
-        }
-    }
-    // 2
-    func urlSession(_ session: URLSession,
-                    downloadTask: URLSessionDownloadTask,
-                    didWriteData bytesWritten: Int64,
-                    totalBytesWritten: Int64,
-                    totalBytesExpectedToWrite: Int64){
-        //printLog(str: "dl in progress: \(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100)")
-        
-        //progressView.doubleValue = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
-        
-        if let scriptToQuery = downloadTask.taskDescription {
-            if let relevantProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
-                relevantProgressIndicator.doubleValue = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
-            }
-        }
-    }
 
-    
-    //MARK: URLSessionTaskDelegate
-    func urlSession(_ session: URLSession,
-                    task: URLSessionTask,
-                    didCompleteWithError error: Error?){
-        //downloadTask = nil  //????????????????
-        //progressView.doubleValue = 0.0
-        //downloadSelectedBtn.isEnabled = true
-        if (error != nil) {
-            print("taskDidCompleteWithError: \(error!.localizedDescription)")
-        }else{
-            print("The task finished transferring data successfully")
-        }
-        
-//        // Reset relevant Progress Indicator
-//        if let scriptToQuery = task.taskDescription {
-//            if let relevantProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
-//                relevantProgressIndicator.doubleValue = 0.0
-//            }
-//            if let relevantDownloadBtn = downloadBtnDict[scriptToQuery] {
-//                relevantDownloadBtn.state = NSOffState  // "Download"
-//            }
-//        }
-        
-        if let scriptToQuery = task.taskDescription {
-            isDownloadingDict[scriptToQuery] = false
-            refreshAllGuiViews()
-        }
-    }
     
     func runSyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
         // Note: Purposely running in Main thread because it's not going take that long to run each of our tasks
         
+        printLog(str: "==========")
         printLog(str: "runSyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
         
         // Make sure we can find the script file. Return if not.
@@ -905,6 +829,7 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     
     func runAsyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
         //printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
+        printLog(str: "==========")
         printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0])")
         
 //        if arguments[0] == "-i" {
@@ -995,7 +920,8 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
     
     func runBgInstallsAsRoot(allInstallScriptsStr: String) {
         // ?????????????? Run in Background thread ???????????????
-        printLog(str: "----------")
+        //printLog(str: "----------")
+        printLog(str: "=+=+=+=+=+")
         printLog(str: "runInstallsAsRoot()")
 
         // AppleScript
@@ -1020,6 +946,116 @@ class DownloadInstallVC: NSViewController, URLSessionDownloadDelegate {
                 isInstallingDict[scriptToQuery] = false
             }
         }
-        printLog(str: "----------")
+        printLog(str: "=-=-=-=-=-")
+    }
+}
+
+extension DownloadInstallVC: URLSessionDownloadDelegate {
+    //MARK: URLSessionDownloadDelegate
+    // 1
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didFinishDownloadingTo location: URL) {
+        // Download task DID finish successfully. Though, it MIGHT be HTML in case of 404 error, for example.
+        
+        //printLog(str: "=== Session DownloadTask DidFinishDownloadingTo: \(location)")
+        
+        let fileManager = FileManager.default  /////////?????????????? don't we need FileManager().default ?????????????????
+        
+        if let scriptToQuery = downloadTask.taskDescription {
+            if let appMeta = appMetaDict[scriptToQuery] {
+                if let httpResponse = downloadTask.response as? HTTPURLResponse {
+                    let statusCode = httpResponse.statusCode
+                    printLog(str: "----------")
+                    printLog(str: "HTTP Status Code: \(statusCode)")
+                    if statusCode == 200 {
+                        //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/GiMp.sh")
+                        //let destinationURLForFile = URL(fileURLWithPath: "\(sourceFilePath)/TeamViewerHost.dmg")
+                        let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
+                        printLog(str: "destUrlForFile: \(destinationURLForFile)")
+                        
+                        if fileManager.fileExists(atPath: destinationURLForFile.path){
+                            printLog(str: "File already exists! Removing this file: \(destinationURLForFile)")
+                            do {
+                                try fileManager.removeItem(at: destinationURLForFile)
+                                //printLog(str: "Removed item at: \(destinationURLForFile)")
+                            }catch{
+                                printLog(str: "  An error occurred while removing file at destination url")
+                            }
+                        }
+                        
+                        // Move item from temp dir to desination dir
+                        printLog(str: "Moving item to this destination: \(destinationURLForFile)")
+                        do {
+                            try fileManager.moveItem(at: location, to: destinationURLForFile)
+                            //printLog(str: "Moved item to: \()")
+                        }catch{
+                            printLog(str: "  An error occurred while moving file to destination url")
+                        }
+                    } else {
+                        printLog(str: "HTTP Response (Status Code) is not 200! Assuming Download Failure. Not copying file to destination url")
+                    }
+                } else {
+                    printLog(str: "Unable to obtain HTTP Response! Assuming Download Failure. Not copying file to destination url")
+                }
+                
+                
+                
+                //                refreshAllDownloadStatusImgViews()
+                //                refreshAllInstallStatusImgViews()  // Because "Install" button enabled state depends on downloadStateImgView.image
+                isDownloadingDict[scriptToQuery] = false
+                refreshAllGuiViews()
+            }
+        }
+    }
+    // 2
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didWriteData bytesWritten: Int64,
+                    totalBytesWritten: Int64,
+                    totalBytesExpectedToWrite: Int64){
+        //printLog(str: "dl in progress: \(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100)")
+        
+        //progressView.doubleValue = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
+        
+        if let scriptToQuery = downloadTask.taskDescription {
+            if let relevantProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
+                relevantProgressIndicator.doubleValue = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
+            }
+        }
+    }
+    
+    
+    //MARK: URLSessionTaskDelegate
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    didCompleteWithError error: Error?){
+        // Any type of task is done, but MAYBE successfully, MAYBE with error.
+        
+        //printLog(str: "=== Session Task DidCompleteWithMAYBEError")
+        
+        //downloadTask = nil  //????????????????
+        //progressView.doubleValue = 0.0
+        //downloadSelectedBtn.isEnabled = true
+        if (error != nil) {
+            printLog(str: "taskDidCompleteWithError: \(error!.localizedDescription)")
+        }else{
+            printLog(str: "The task finished transferring data successfully (any status code, even 404)")
+        }
+        
+        //        // Reset relevant Progress Indicator
+        //        if let scriptToQuery = task.taskDescription {
+        //            if let relevantProgressIndicator = downloadProgressIndicatorDict[scriptToQuery] {
+        //                relevantProgressIndicator.doubleValue = 0.0
+        //            }
+        //            if let relevantDownloadBtn = downloadBtnDict[scriptToQuery] {
+        //                relevantDownloadBtn.state = NSOffState  // "Download"
+        //            }
+        //        }
+        
+        if let scriptToQuery = task.taskDescription {
+            isDownloadingDict[scriptToQuery] = false
+            refreshAllGuiViews()
+        }
     }
 }
