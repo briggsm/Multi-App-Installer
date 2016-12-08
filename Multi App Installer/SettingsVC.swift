@@ -10,14 +10,17 @@ import Cocoa
 
 class SettingsVC: NSViewController {
 
-    @IBOutlet weak var scriptsFolderTF: NSTextField!
     @IBOutlet weak var sourceFolderTF: NSTextField!
     @IBOutlet weak var enableInstallPreAppsCB: NSButton!  // Enable Install Button for Already (Pre) Installed Apps
     
     override func viewWillDisappear() {
         //print("**view will DISAPPEAR**")
-        // Save sourceFolderTF to UserDefaults
-        UserDefaults.standard.setValue(sourceFolderTF.stringValue, forKey: "sourceFolder")
+        if FileManager.default.fileExists(atPath: sourceFolderTF.stringValue) {
+            // Save sourceFolderTF to UserDefaults
+            UserDefaults.standard.setValue(sourceFolderTF.stringValue, forKey: "sourceFolder")
+        } else {
+            //alertSourceFolderDoesNotExist()
+        }
     }
     
     override func viewDidLoad() {
@@ -36,6 +39,12 @@ class SettingsVC: NSViewController {
         enableInstallPreAppsCB.state = enableInstallPreAppsDefault ? NSOnState : NSOffState
     }
     
+    @IBAction func sourceFolderTFFocusLeft(_ sender: NSTextField) {
+        if !FileManager.default.fileExists(atPath: sourceFolderTF.stringValue) {
+            alertSourceFolderDoesNotExist()
+        }
+    }
+    
     @IBAction func sourceFolderBrowseBtnClicked(_ sender: NSButton) {
         let openPanel = NSOpenPanel()
         openPanel.title = "Choose a Folder"
@@ -51,5 +60,12 @@ class SettingsVC: NSViewController {
     @IBAction func enableInstallPreAppsCBToggled(_ sender: NSButton) {
         // Save to UserDefaults
         UserDefaults.standard.setValue(sender.state == NSOnState ? true : false, forKey: "enableInstallPreApps")
+    }
+    
+    func alertSourceFolderDoesNotExist() {
+        let alert: NSAlert = NSAlert()
+        alert.messageText = "Source Folder does not exist!"
+        alert.informativeText = "You must choose an existing folder!"
+        _ = alert.runModal()
     }
 }

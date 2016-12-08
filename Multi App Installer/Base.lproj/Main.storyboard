@@ -3,7 +3,6 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -683,7 +682,7 @@
             <objects>
                 <tabViewController selectedTabViewItemIndex="1" id="eQQ-7v-6OT" sceneMemberID="viewController">
                     <tabViewItems>
-                        <tabViewItem identifier="" id="wG6-aB-ktK"/>
+                        <tabViewItem id="R7X-d2-3dP"/>
                         <tabViewItem identifier="" id="3TV-i9-SUd"/>
                     </tabViewItems>
                     <tabView key="tabView" type="noTabsNoBorder" id="kWi-Ja-KOf">
@@ -693,7 +692,7 @@
                         <tabViewItems/>
                     </tabView>
                     <connections>
-                        <segue destination="ZAb-Wn-uCc" kind="relationship" relationship="tabItems" id="Fea-J8-2e5"/>
+                        <segue destination="H0G-FG-exq" kind="relationship" relationship="tabItems" id="8ts-lR-Uxf"/>
                         <segue destination="aoz-B7-XrR" kind="relationship" relationship="tabItems" id="F97-KS-z6G"/>
                     </connections>
                 </tabViewController>
@@ -702,111 +701,80 @@
             <point key="canvasLocation" x="74" y="722"/>
         </scene>
         <!--Settings-->
-        <scene sceneID="iTR-SR-ywI">
+        <scene sceneID="jIa-Vp-efz">
             <objects>
-                <viewController title="Settings" id="ZAb-Wn-uCc" customClass="SettingsVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="CRg-FA-jfe">
-                        <rect key="frame" x="0.0" y="0.0" width="541" height="365"/>
+                <viewController title="Settings" id="H0G-FG-exq" customClass="SettingsVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="014-MK-5x9">
+                        <rect key="frame" x="0.0" y="0.0" width="612" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="E1z-5m-fdj">
-                                <rect key="frame" x="20" y="20" width="501" height="325"/>
-                                <subviews>
-                                    <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="752" translatesAutoresizingMaskIntoConstraints="NO" id="ZpP-Km-oZX">
-                                        <rect key="frame" x="0.0" y="303" width="501" height="22"/>
-                                        <beginningViews>
-                                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GzL-gV-l1E">
-                                                <rect key="frame" x="-2" y="0.0" width="93" height="22"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Source Folder:" id="OUg-sL-AOK">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <textField horizontalHuggingPriority="248" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T2p-cg-iev">
-                                                <rect key="frame" x="97" y="0.0" width="312" height="22"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="uMf-Ej-Irz">
-                                                    <font key="font" metaFont="system"/>
-                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
-                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rB0-Zt-UVL">
-                                                <rect key="frame" x="411" y="-7" width="96" height="33"/>
-                                                <buttonCell key="cell" type="push" title="Browse..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gO9-zv-HFF">
-                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
-                                                </buttonCell>
-                                                <connections>
-                                                    <action selector="sourceFolderBrowseBtnClicked:" target="ZAb-Wn-uCc" id="SnU-Lp-tg6"/>
-                                                </connections>
-                                            </button>
-                                        </beginningViews>
-                                        <visibilityPriorities>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                            <integer value="1000"/>
-                                        </visibilityPriorities>
-                                        <customSpacing>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                            <real value="3.4028234663852886e+38"/>
-                                        </customSpacing>
-                                    </stackView>
-                                    <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6U9-g9-agV">
-                                        <rect key="frame" x="-6" y="267" width="112" height="32"/>
-                                        <buttonCell key="cell" type="push" title="Placeholder" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="kWb-2X-w9j">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                    </button>
-                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="Tba-Fj-Ghm">
-                                        <rect key="frame" x="-2" y="250" width="314" height="18"/>
-                                        <buttonCell key="cell" type="check" title="Enable &quot;Install&quot; button for already installed Apps" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WyI-Qf-vhE">
-                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="enableInstallPreAppsCBToggled:" target="ZAb-Wn-uCc" id="rWI-7W-Lpi"/>
-                                        </connections>
-                                    </button>
-                                    <button hidden="YES" verticalHuggingPriority="248" translatesAutoresizingMaskIntoConstraints="NO" id="tf5-zH-7CF">
-                                        <rect key="frame" x="-6" y="-7" width="112" height="255"/>
-                                        <buttonCell key="cell" type="push" title="Placeholder" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="5V9-VU-lG1">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                    </button>
-                                </subviews>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YDd-kS-SDq">
+                                <rect key="frame" x="18" y="263" width="93" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Source Folder:" id="JJD-53-Y6z">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="D6w-zS-dkq">
+                                <rect key="frame" x="117" y="261" width="383" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="yYX-Pp-tFO">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <action selector="sourceFolderTFFocusLeft:" target="H0G-FG-exq" id="ts9-OD-Aj8"/>
+                                </connections>
+                            </textField>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="uMA-mx-Suo">
+                                <rect key="frame" x="18" y="217" width="576" height="18"/>
+                                <buttonCell key="cell" type="check" title="Enable &quot;Install&quot; button for already installed Apps" bezelStyle="regularSquare" imagePosition="left" inset="2" id="pAH-t7-9tD">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="enableInstallPreAppsCBToggled:" target="H0G-FG-exq" id="CrI-Pq-woa"/>
+                                </connections>
+                            </button>
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="oMV-7F-0YD">
+                                <rect key="frame" x="20" y="239" width="572" height="5"/>
+                            </box>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7wV-TJ-S4H">
+                                <rect key="frame" x="502" y="255" width="96" height="32"/>
+                                <buttonCell key="cell" type="push" title="Browse..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="RhV-pE-49T">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="sourceFolderBrowseBtnClicked:" target="H0G-FG-exq" id="XjW-XX-CGC"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="E1z-5m-fdj" firstAttribute="top" secondItem="CRg-FA-jfe" secondAttribute="top" constant="20" id="Iyz-NA-CIR"/>
-                            <constraint firstItem="E1z-5m-fdj" firstAttribute="leading" secondItem="CRg-FA-jfe" secondAttribute="leading" constant="20" id="ZiG-65-3gW"/>
-                            <constraint firstAttribute="trailing" secondItem="E1z-5m-fdj" secondAttribute="trailing" constant="20" id="eGv-4Z-E1p"/>
-                            <constraint firstAttribute="bottom" secondItem="E1z-5m-fdj" secondAttribute="bottom" constant="20" id="gct-d4-emd"/>
+                            <constraint firstItem="YDd-kS-SDq" firstAttribute="leading" secondItem="014-MK-5x9" secondAttribute="leading" constant="20" id="2Vz-1I-yz9"/>
+                            <constraint firstAttribute="trailing" secondItem="oMV-7F-0YD" secondAttribute="trailing" constant="20" id="Bci-FI-dd7"/>
+                            <constraint firstItem="D6w-zS-dkq" firstAttribute="leading" secondItem="YDd-kS-SDq" secondAttribute="trailing" constant="8" id="Izh-Ja-rcR"/>
+                            <constraint firstItem="uMA-mx-Suo" firstAttribute="leading" secondItem="014-MK-5x9" secondAttribute="leading" constant="20" id="JVS-yg-en6"/>
+                            <constraint firstItem="oMV-7F-0YD" firstAttribute="leading" secondItem="014-MK-5x9" secondAttribute="leading" constant="20" id="Nwh-bq-sjJ"/>
+                            <constraint firstAttribute="trailing" secondItem="uMA-mx-Suo" secondAttribute="trailing" constant="20" id="QW1-rr-IYe"/>
+                            <constraint firstItem="YDd-kS-SDq" firstAttribute="top" secondItem="014-MK-5x9" secondAttribute="top" constant="20" id="Sv8-L4-yTb"/>
+                            <constraint firstItem="YDd-kS-SDq" firstAttribute="centerY" secondItem="D6w-zS-dkq" secondAttribute="centerY" id="aco-GS-Cai"/>
+                            <constraint firstItem="oMV-7F-0YD" firstAttribute="top" secondItem="YDd-kS-SDq" secondAttribute="bottom" constant="21" id="d1W-yC-OGg"/>
+                            <constraint firstItem="D6w-zS-dkq" firstAttribute="centerY" secondItem="7wV-TJ-S4H" secondAttribute="centerY" id="fyO-fc-F6L"/>
+                            <constraint firstItem="uMA-mx-Suo" firstAttribute="top" secondItem="oMV-7F-0YD" secondAttribute="bottom" constant="8" id="qR6-dW-kfl"/>
+                            <constraint firstItem="7wV-TJ-S4H" firstAttribute="leading" secondItem="D6w-zS-dkq" secondAttribute="trailing" constant="8" id="tS7-ag-o9u"/>
+                            <constraint firstAttribute="trailing" secondItem="7wV-TJ-S4H" secondAttribute="trailing" constant="20" id="ygW-2X-HyB"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="enableInstallPreAppsCB" destination="Tba-Fj-Ghm" id="3R9-XR-mIV"/>
-                        <outlet property="sourceFolderTF" destination="T2p-cg-iev" id="Qo4-y6-qho"/>
+                        <outlet property="enableInstallPreAppsCB" destination="uMA-mx-Suo" id="bTy-Wo-0Sh"/>
+                        <outlet property="sourceFolderTF" destination="D6w-zS-dkq" id="q4l-7Y-GrJ"/>
                     </connections>
                 </viewController>
-                <customObject id="K9y-NN-nAC" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="3xT-LH-LD7" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="785.5" y="551.5"/>
+            <point key="canvasLocation" x="732" y="551"/>
         </scene>
         <!--Download & Install-->
         <scene sceneID="5zz-8h-mVi">
