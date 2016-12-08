@@ -18,15 +18,17 @@ struct AppMeta {
 
 class DownloadInstallVC: NSViewController {
 
+    // MARK: Scripts
     var scriptsDirPath: String = ""
     var scriptsToQuery = Array<String>()
     
-    var session: URLSession = URLSession()
+    var urlSession: URLSession = URLSession()
     
+    // MARK: Defaults
     var sourceFolder = UserDefaults.standard.string(forKey: "sourceFolder") ?? "/tmp"
     var enableInstallPreApps = UserDefaults.standard.bool(forKey: "enableInstallPreApps")
     
-
+    // MARK: Dictionaries
     var appMetaDict = [String : AppMeta]()
     
     var downloadStatusImgViewDict = [String : NSImageView]()
@@ -39,14 +41,15 @@ class DownloadInstallVC: NSViewController {
     var installProgressIndicatorDict = [String : NSProgressIndicator]()
     var isInstallingDict = [String : Bool]()
     
+    // MARK: Outlets
     @IBOutlet weak var appsStackView: NSStackView!
     @IBOutlet weak var selectAllCB: NSButton!
     @IBOutlet weak var actionBtnsStackView: NSStackView!
     @IBOutlet var statusTV: NSTextView!
     @IBOutlet weak var downloadSelectedBtn: NSButton!
-    
     @IBOutlet weak var progressView: NSProgressIndicator!
     
+    // MARK: - Initial Loading Functions
     override func viewDidAppear() {
         //printLog(str: "*viewDidAppear()*")
         
@@ -100,7 +103,7 @@ class DownloadInstallVC: NSViewController {
         
         // Init Session for Downloading files.
         let config = URLSessionConfiguration.default
-        session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
+        urlSession = URLSession(configuration: config, delegate: self, delegateQueue: .main)
         
         // Change current directory to script's dir for rest of App's lifetime
         changeCurrentDirToScriptsDir()
@@ -188,15 +191,6 @@ class DownloadInstallVC: NSViewController {
                 downloadImgBtnSV.spacing = 10
                 downloadImgBtnSV.addView(downloadStatusImgView, in: .leading)
                 downloadImgBtnSV.addView(downloadBtn, in: .leading)
-                //                    if #available(OSX 10.11, *) {
-                //                        downloadImgBtnSV.addArrangedSubview(downloadStatusImgView)
-                //                        downloadImgBtnSV.addArrangedSubview(downloadBtn)
-                //                    } else {
-                //                        // Fallback on earlier versions
-                //                    }
-                
-                //                    downloadImgBtnSV.addSubview(downloadStatusImgView)
-                //                    downloadImgBtnSV.addSubview(downloadBtn)
                 downloadImgBtnSV.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 
                 // Download Progress
@@ -303,6 +297,7 @@ class DownloadInstallVC: NSViewController {
         refreshAllGuiViews()
     }
     
+    // MARK: IB Actions
     @IBAction func selectAllCBToggled(_ sender: NSButton) {
         let newState = selectAllCB.state
         
@@ -311,6 +306,10 @@ class DownloadInstallVC: NSViewController {
                 selectionCB.state = newState
             }
         }
+    }
+    
+    @IBAction func quitBtnClicked(_ sender: NSButton) {
+        NSApplication.shared().terminate(self)
     }
     
     @IBAction func downloadSelectedBtnClicked(_ sender: NSButton) {
@@ -354,10 +353,6 @@ class DownloadInstallVC: NSViewController {
         }
     }
     
-    @IBAction func quitBtnClicked(_ sender: NSButton) {
-        NSApplication.shared().terminate(self)
-    }
-    
     func downloadBtnClicked(btn: NSButton) {
         let scriptToQuery = btn.identifier ?? ""
         if !scriptToQuery.isEmpty {
@@ -367,7 +362,7 @@ class DownloadInstallVC: NSViewController {
                     startDownloadTask(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
                 } else {
                     // === Cancel the download ===
-                    session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
+                    urlSession.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
                         for downloadTask in downloadTasks {
                             if downloadTask.taskDescription == scriptToQuery {
                                 self.printLog(str: "----------")
@@ -377,81 +372,6 @@ class DownloadInstallVC: NSViewController {
                                 self.refreshAllGuiViews()
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-    
-    func refreshAllGuiViews() {
-        
-        for (scriptToQuery, downloadStatusImgView) in downloadStatusImgViewDict {
-            if let appMeta = appMetaDict[scriptToQuery], let downloadProgressIndicator = downloadProgressIndicatorDict[scriptToQuery], let installStatusImgView = installStatusImgViewDict[scriptToQuery], let downloadBtn = downloadBtnDict[scriptToQuery], let installBtn = installBtnDict[scriptToQuery], let isDownloading = isDownloadingDict[scriptToQuery], let isInstalling = isInstallingDict[scriptToQuery] {
-                
-                // === Refresh All Download Views ===
-                
-                // Download Status ImageView
-                let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
-                if FileManager.default.fileExists(atPath: destinationURLForFile.path) {
-                    downloadStatusImgView.image = NSImage(named: "greenCheck")
-                } else {
-                    downloadStatusImgView.image = NSImage(named: "redX")
-                }
-                
-                // Download Btn
-                //  'Usually', automatically taken care of because it's a toggle button. But in case of download comleting, we need to programmatically toggle this button
-                if isDownloading {
-                    downloadBtn.state = NSOnState  // "Cancel"
-                } else {
-                    downloadBtn.state = NSOffState  // "Download"
-                }
-                
-                // Download Progress Indicator
-                if isDownloading {
-                    // Automatically taken care of by task/session delegate
-                } else {
-                    downloadProgressIndicator.doubleValue = 0.0
-                }
-                
-                
-                // === Refresh All Install Views ===
-                
-                // Install Status ImageView
-                var proofPathActuallyExists = false
-                for proofPath in appMeta.proofAppExistsPaths {
-                    if FileManager.default.fileExists(atPath: proofPath) {
-                        proofPathActuallyExists = true
-                        break
-                    }
-                }
-                if proofPathActuallyExists {
-                    installStatusImgView.image = NSImage(named: "greenCheck")
-                } else {
-                    installStatusImgView.image = NSImage(named: "redX")
-                }
-                
-                // Install Btn
-                if isInstalling || isDownloading || downloadStatusImgView.image?.name() == "redX" {
-                    installBtn.isEnabled = false
-                } else {
-                    if installStatusImgView.image?.name() == "redX" {
-                        installBtn.isEnabled = true
-                    } else {
-                        installBtn.isEnabled = enableInstallPreApps
-                    }
-                }
-                
-                // Install Progress Indicator
-                if let isInstalling = isInstallingDict[scriptToQuery], let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
-                    if isInstalling {
-                        // Start the indeterminate progress indicators
-                        installProgressIndicator.isIndeterminate = true
-                        installProgressIndicator.startAnimation(self)
-                    } else {
-                        // Stop the indeterminate progress indicators
-                        installProgressIndicator.stopAnimation(self)
-                        installProgressIndicator.isIndeterminate = false
-                        installProgressIndicator.doubleValue = 0.0
                     }
                 }
             }
@@ -473,79 +393,13 @@ class DownloadInstallVC: NSViewController {
             }
         }
     }
-
-    func printLog(str: String) {
-        printLog(str: str, terminator: "\n")
-    }
     
-    func printLog(str: String, terminator: String) {
-        
-        // First tidy-up str a bit
-        var prettyStr = str.replacingOccurrences(of: "\r\n", with: "\n") // just incase
-        prettyStr = prettyStr.replacingOccurrences(of: "\r", with: "\n") // becasue AppleScript returns line endings with '\r'
-        
-        // Normal print
-        print(prettyStr, terminator: terminator)
-        
-        // Print to log file
-        if let cachesDirUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
-            let logFilePathUrl = cachesDirUrl.appendingPathComponent("multi-app-installer-log.txt")
-            let logData = (prettyStr + terminator).data(using: .utf8, allowLossyConversion: false)!
-            
-            if FileManager.default.fileExists(atPath: logFilePathUrl.path) {
-                do {
-                    let logFileHandle = try FileHandle(forWritingTo: logFilePathUrl)
-                    logFileHandle.seekToEndOfFile()
-                    logFileHandle.write(logData)
-                    logFileHandle.closeFile()
-                } catch {
-                    print("Unable to write to existing log file, at this path: \(logFilePathUrl.path)")
-                }
-            } else {
-                do {
-                    try logData.write(to: logFilePathUrl)
-                } catch {
-                    print("Can't write to new log file, at this path: \(logFilePathUrl.path)")
-                }
-            }
-        }
-    }
-    
-    func changeCurrentDirToScriptsDir() {
-        guard let runIsPath = Bundle.main.path(forResource: "Scripts/runIs", ofType:"sh") else {
-            printLog(str: "\n  Unable to locate: Scripts/runIs.sh!")
-            return
-        }
-        
-        scriptsDirPath = String(runIsPath.characters.dropLast(8))  // drop off: "runIs.sh"
-        if FileManager.default.changeCurrentDirectoryPath(scriptsDirPath) {
-            //printLog(str: "success changing dir to: \(scriptsDirPath)")
-        } else {
-            printLog(str: "failure changing dir to: \(scriptsDirPath)")
-        }
-    }
-    
-    func setupScriptsToQueryArray() {
-        do {
-            var scriptsDirContents = try FileManager.default.contentsOfDirectory(atPath: scriptsDirPath)
-            
-            // Remove "runIs.sh" from the list of scripts.
-            if let index = scriptsDirContents.index(of: "runIs.sh") {
-                scriptsDirContents.remove(at: index)
-            }
-            
-            scriptsToQuery = scriptsDirContents
-            printLog(str: "scriptsToQuery: \(scriptsToQuery)")
-        } catch {
-            printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
-        }
-    }
-    
+    // MARK: Tasks
     func startDownloadTask(scriptToQuery: String, downloadUrl: URL) {
         self.printLog(str: "----------")
         self.printLog(str: "Starting Download: \(downloadUrl)")
         let urlRequest = URLRequest(url: downloadUrl)
-        let downloadTask = session.downloadTask(with: urlRequest)
+        let downloadTask = urlSession.downloadTask(with: urlRequest)
         downloadTask.taskDescription = scriptToQuery
         downloadTask.resume()
         isDownloadingDict[scriptToQuery] = true
@@ -664,6 +518,148 @@ class DownloadInstallVC: NSViewController {
                 })
             }
             self.printLog(str: "=-=-=-=-=-")
+        }
+    }
+    
+    // MARK: Misc. Functions
+    func refreshAllGuiViews() {
+        for (scriptToQuery, downloadStatusImgView) in downloadStatusImgViewDict {
+            if let appMeta = appMetaDict[scriptToQuery], let downloadProgressIndicator = downloadProgressIndicatorDict[scriptToQuery], let installStatusImgView = installStatusImgViewDict[scriptToQuery], let downloadBtn = downloadBtnDict[scriptToQuery], let installBtn = installBtnDict[scriptToQuery], let isDownloading = isDownloadingDict[scriptToQuery], let isInstalling = isInstallingDict[scriptToQuery] {
+                
+                // === Refresh All Download Views ===
+                
+                // Download Status ImageView
+                let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
+                if FileManager.default.fileExists(atPath: destinationURLForFile.path) {
+                    downloadStatusImgView.image = NSImage(named: "greenCheck")
+                } else {
+                    downloadStatusImgView.image = NSImage(named: "redX")
+                }
+                
+                // Download Btn
+                //  'Usually', automatically taken care of because it's a toggle button. But in case of download comleting, we need to programmatically toggle this button
+                if isDownloading {
+                    downloadBtn.state = NSOnState  // "Cancel"
+                } else {
+                    downloadBtn.state = NSOffState  // "Download"
+                }
+                
+                // Download Progress Indicator
+                if isDownloading {
+                    // Automatically taken care of by task/session delegate
+                } else {
+                    downloadProgressIndicator.doubleValue = 0.0
+                }
+                
+                
+                // === Refresh All Install Views ===
+                
+                // Install Status ImageView
+                var proofPathActuallyExists = false
+                for proofPath in appMeta.proofAppExistsPaths {
+                    if FileManager.default.fileExists(atPath: proofPath) {
+                        proofPathActuallyExists = true
+                        break
+                    }
+                }
+                if proofPathActuallyExists {
+                    installStatusImgView.image = NSImage(named: "greenCheck")
+                } else {
+                    installStatusImgView.image = NSImage(named: "redX")
+                }
+                
+                // Install Btn
+                if isInstalling || isDownloading || downloadStatusImgView.image?.name() == "redX" {
+                    installBtn.isEnabled = false
+                } else {
+                    if installStatusImgView.image?.name() == "redX" {
+                        installBtn.isEnabled = true
+                    } else {
+                        installBtn.isEnabled = enableInstallPreApps
+                    }
+                }
+                
+                // Install Progress Indicator
+                if let isInstalling = isInstallingDict[scriptToQuery], let installProgressIndicator = installProgressIndicatorDict[scriptToQuery] {
+                    if isInstalling {
+                        // Start the indeterminate progress indicators
+                        installProgressIndicator.isIndeterminate = true
+                        installProgressIndicator.startAnimation(self)
+                    } else {
+                        // Stop the indeterminate progress indicators
+                        installProgressIndicator.stopAnimation(self)
+                        installProgressIndicator.isIndeterminate = false
+                        installProgressIndicator.doubleValue = 0.0
+                    }
+                }
+            }
+        }
+    }
+    
+    func printLog(str: String) {
+        printLog(str: str, terminator: "\n")
+    }
+    
+    func printLog(str: String, terminator: String) {
+        
+        // First tidy-up str a bit
+        var prettyStr = str.replacingOccurrences(of: "\r\n", with: "\n") // just incase
+        prettyStr = prettyStr.replacingOccurrences(of: "\r", with: "\n") // becasue AppleScript returns line endings with '\r'
+        
+        // Normal print
+        print(prettyStr, terminator: terminator)
+        
+        // Print to log file
+        if let cachesDirUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
+            let logFilePathUrl = cachesDirUrl.appendingPathComponent("multi-app-installer-log.txt")
+            let logData = (prettyStr + terminator).data(using: .utf8, allowLossyConversion: false)!
+            
+            if FileManager.default.fileExists(atPath: logFilePathUrl.path) {
+                do {
+                    let logFileHandle = try FileHandle(forWritingTo: logFilePathUrl)
+                    logFileHandle.seekToEndOfFile()
+                    logFileHandle.write(logData)
+                    logFileHandle.closeFile()
+                } catch {
+                    print("Unable to write to existing log file, at this path: \(logFilePathUrl.path)")
+                }
+            } else {
+                do {
+                    try logData.write(to: logFilePathUrl)
+                } catch {
+                    print("Can't write to new log file, at this path: \(logFilePathUrl.path)")
+                }
+            }
+        }
+    }
+    
+    func changeCurrentDirToScriptsDir() {
+        guard let runIsPath = Bundle.main.path(forResource: "Scripts/runIs", ofType:"sh") else {
+            printLog(str: "\n  Unable to locate: Scripts/runIs.sh!")
+            return
+        }
+        
+        scriptsDirPath = String(runIsPath.characters.dropLast(8))  // drop off: "runIs.sh"
+        if FileManager.default.changeCurrentDirectoryPath(scriptsDirPath) {
+            //printLog(str: "success changing dir to: \(scriptsDirPath)")
+        } else {
+            printLog(str: "failure changing dir to: \(scriptsDirPath)")
+        }
+    }
+    
+    func setupScriptsToQueryArray() {
+        do {
+            var scriptsDirContents = try FileManager.default.contentsOfDirectory(atPath: scriptsDirPath)
+            
+            // Remove "runIs.sh" from the list of scripts.
+            if let index = scriptsDirContents.index(of: "runIs.sh") {
+                scriptsDirContents.remove(at: index)
+            }
+            
+            scriptsToQuery = scriptsDirContents
+            printLog(str: "scriptsToQuery: \(scriptsToQuery)")
+        } catch {
+            printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
         }
     }
 }
