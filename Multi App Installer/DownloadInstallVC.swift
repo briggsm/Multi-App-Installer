@@ -43,11 +43,9 @@ class DownloadInstallVC: NSViewController {
     
     // MARK: Outlets
     @IBOutlet weak var appsStackView: NSStackView!
-    @IBOutlet weak var selectAllCB: NSButton!
-    @IBOutlet weak var actionBtnsStackView: NSStackView!
     @IBOutlet var statusTV: NSTextView!
     @IBOutlet weak var downloadSelectedBtn: NSButton!
-    @IBOutlet weak var progressView: NSProgressIndicator!
+    @IBOutlet weak var selectAllBtn: NSButton!
     
     // MARK: - Initial Loading Functions
     override func viewDidAppear() {
@@ -299,20 +297,9 @@ class DownloadInstallVC: NSViewController {
         performSegue(withIdentifier: "LanguageChooserVC", sender: self)
     }
 
-    /*
-    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        //if segue.destinationViewController is LanguageChooserVC {
-        if segue.destinationController is LanguageChooserVC {
-            //let langChooserVC = segue.destinationController as! LanguageChooserVC
-            //dir2VC.delegate = self
-            //dir2VC.title = dirLevel2Title
-        }
-    }
-    */
-    
     // MARK: IB Actions
-    @IBAction func selectAllCBToggled(_ sender: NSButton) {
-        let newState = selectAllCB.state
+    @IBAction func selectAllBtnToggled(_ sender: NSButton) {
+        let newState = selectAllBtn.state
         
         for entryStackView in appsStackView.views as! [NSStackView] {
             if let selectionCB = entryStackView.views.first as! NSButton? {
@@ -320,6 +307,7 @@ class DownloadInstallVC: NSViewController {
             }
         }
     }
+    
     
     @IBAction func quitBtnClicked(_ sender: NSButton) {
         NSApplication.shared().terminate(self)
