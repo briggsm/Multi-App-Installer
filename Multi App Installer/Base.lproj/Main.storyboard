@@ -781,58 +781,11 @@
             <objects>
                 <viewController title="Download &amp; Install" id="aoz-B7-XrR" customClass="DownloadInstallVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="v4L-he-Dc1">
-                        <rect key="frame" x="0.0" y="0.0" width="445" height="435"/>
+                        <rect key="frame" x="0.0" y="0.0" width="466" height="435"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <stackView orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="4Ua-ub-F0N">
-                                <rect key="frame" x="20" y="152" width="405" height="21"/>
-                                <beginningViews>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vOx-UX-sFg">
-                                        <rect key="frame" x="-6" y="-7" width="66" height="32"/>
-                                        <buttonCell key="cell" type="push" title="Quit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Nkb-0C-YO5">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="quitBtnClicked:" target="aoz-B7-XrR" id="YSf-Ep-0XW"/>
-                                        </connections>
-                                    </button>
-                                </beginningViews>
-                                <endViews>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
-                                        <rect key="frame" x="125" y="-7" width="157" height="32"/>
-                                        <buttonCell key="cell" type="push" title="Download Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IUb-EV-645">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="downloadSelectedBtnClicked:" target="aoz-B7-XrR" id="MFR-sT-XzA"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dSx-ho-6to">
-                                        <rect key="frame" x="278" y="-7" width="133" height="32"/>
-                                        <buttonCell key="cell" type="push" title="Install Selected" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eLE-uv-CBv">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="installSelectedBtnClicked:" target="aoz-B7-XrR" id="ifz-A3-gL2"/>
-                                        </connections>
-                                    </button>
-                                </endViews>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="29X-Bm-D4b">
-                                <rect key="frame" x="18" y="416" width="409" height="19"/>
+                                <rect key="frame" x="18" y="416" width="430" height="19"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Applications:" id="NOS-g5-5u4">
                                     <font key="font" metaFont="system" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -840,7 +793,7 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="NrN-PM-0yG">
-                                <rect key="frame" x="18" y="179" width="409" height="18"/>
+                                <rect key="frame" x="18" y="179" width="430" height="18"/>
                                 <buttonCell key="cell" type="check" title="Select All" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="IXZ-eb-ev4">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -850,7 +803,7 @@
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xnZ-9m-cKv">
-                                <rect key="frame" x="18" y="127" width="409" height="17"/>
+                                <rect key="frame" x="18" y="127" width="430" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Status:" id="rLh-me-OAC">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -858,17 +811,17 @@
                                 </textFieldCell>
                             </textField>
                             <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q12-gF-Amc">
-                                <rect key="frame" x="20" y="20" width="405" height="100"/>
+                                <rect key="frame" x="20" y="20" width="426" height="100"/>
                                 <clipView key="contentView" id="DO5-8r-5oH">
-                                    <rect key="frame" x="1" y="1" width="388" height="98"/>
+                                    <rect key="frame" x="1" y="1" width="409" height="98"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textView importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="8pr-J6-hK6">
-                                            <rect key="frame" x="0.0" y="0.0" width="388" height="98"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="409" height="98"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <size key="minSize" width="388" height="98"/>
-                                            <size key="maxSize" width="760" height="10000000"/>
+                                            <size key="minSize" width="409" height="98"/>
+                                            <size key="maxSize" width="983" height="10000000"/>
                                             <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         </textView>
                                     </subviews>
@@ -882,38 +835,70 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="6Nu-Ra-91n">
-                                    <rect key="frame" x="389" y="1" width="15" height="98"/>
+                                    <rect key="frame" x="410" y="1" width="15" height="98"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
                             <stackView orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="f9e-4E-gbQ">
-                                <rect key="frame" x="20" y="203" width="405" height="205"/>
+                                <rect key="frame" x="20" y="203" width="426" height="205"/>
                             </stackView>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vOx-UX-sFg">
+                                <rect key="frame" x="14" y="145" width="66" height="32"/>
+                                <buttonCell key="cell" type="push" title="Quit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Nkb-0C-YO5">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="quitBtnClicked:" target="aoz-B7-XrR" id="YSf-Ep-0XW"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dSx-ho-6to">
+                                <rect key="frame" x="315" y="145" width="137" height="32"/>
+                                <buttonCell key="cell" type="push" title="Install Selected" bezelStyle="rounded" imagePosition="right" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eLE-uv-CBv">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="installSelectedBtnClicked:" target="aoz-B7-XrR" id="ifz-A3-gL2"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
+                                <rect key="frame" x="158" y="145" width="157" height="32"/>
+                                <buttonCell key="cell" type="push" title="Download Selected" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IUb-EV-645">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="downloadSelectedBtnClicked:" target="aoz-B7-XrR" id="MFR-sT-XzA"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="4Ua-ub-F0N" firstAttribute="top" secondItem="NrN-PM-0yG" secondAttribute="bottom" constant="8" id="1Mp-bw-PnL"/>
-                            <constraint firstItem="4Ua-ub-F0N" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="6nd-rN-rvA"/>
+                            <constraint firstItem="dSx-ho-6to" firstAttribute="leading" secondItem="q0y-CI-hQX" secondAttribute="trailing" constant="12" id="9js-db-k0h"/>
                             <constraint firstItem="29X-Bm-D4b" firstAttribute="top" secondItem="v4L-he-Dc1" secondAttribute="top" id="Ahj-2k-aTJ"/>
+                            <constraint firstItem="vOx-UX-sFg" firstAttribute="top" secondItem="NrN-PM-0yG" secondAttribute="bottom" constant="8" id="Cjs-IE-sb5"/>
                             <constraint firstAttribute="trailing" secondItem="NrN-PM-0yG" secondAttribute="trailing" constant="20" id="N7L-vp-h2M"/>
                             <constraint firstItem="8pr-J6-hK6" firstAttribute="top" secondItem="xnZ-9m-cKv" secondAttribute="bottom" constant="8" id="POb-n8-aGd"/>
                             <constraint firstItem="q12-gF-Amc" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="Ugv-WH-1he"/>
                             <constraint firstAttribute="trailing" secondItem="f9e-4E-gbQ" secondAttribute="trailing" constant="20" id="VHR-mI-G3T"/>
                             <constraint firstItem="29X-Bm-D4b" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="WBK-AH-SGR"/>
+                            <constraint firstItem="dSx-ho-6to" firstAttribute="top" secondItem="NrN-PM-0yG" secondAttribute="bottom" constant="8" id="auR-QT-7bc"/>
                             <constraint firstItem="f9e-4E-gbQ" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="bUB-ZQ-ypQ"/>
                             <constraint firstAttribute="trailing" secondItem="29X-Bm-D4b" secondAttribute="trailing" constant="20" id="fDs-dG-87Y"/>
                             <constraint firstItem="NrN-PM-0yG" firstAttribute="top" secondItem="f9e-4E-gbQ" secondAttribute="bottom" constant="8" id="fcI-C0-lAe"/>
                             <constraint firstItem="NrN-PM-0yG" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="hah-cc-Ltc"/>
                             <constraint firstItem="f9e-4E-gbQ" firstAttribute="top" secondItem="29X-Bm-D4b" secondAttribute="bottom" constant="8" id="kGO-38-nPM"/>
+                            <constraint firstItem="q0y-CI-hQX" firstAttribute="top" secondItem="NrN-PM-0yG" secondAttribute="bottom" constant="8" id="l7H-To-Ji6"/>
                             <constraint firstItem="xnZ-9m-cKv" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="lUb-WJ-aZc"/>
                             <constraint firstAttribute="trailing" secondItem="q12-gF-Amc" secondAttribute="trailing" constant="20" id="lX1-zR-mQ3"/>
-                            <constraint firstAttribute="trailing" secondItem="4Ua-ub-F0N" secondAttribute="trailing" constant="20" id="nm9-qG-PUx"/>
+                            <constraint firstAttribute="trailing" secondItem="dSx-ho-6to" secondAttribute="trailing" constant="20" id="mDF-J0-3pb"/>
+                            <constraint firstItem="vOx-UX-sFg" firstAttribute="leading" secondItem="v4L-he-Dc1" secondAttribute="leading" constant="20" id="nKV-W8-1tc"/>
                             <constraint firstAttribute="bottom" secondItem="q12-gF-Amc" secondAttribute="bottom" constant="20" id="ozY-RS-snU"/>
-                            <constraint firstItem="xnZ-9m-cKv" firstAttribute="top" secondItem="4Ua-ub-F0N" secondAttribute="bottom" constant="8" id="pXs-0n-Nea"/>
+                            <constraint firstItem="xnZ-9m-cKv" firstAttribute="top" secondItem="vOx-UX-sFg" secondAttribute="bottom" constant="8" id="upS-7T-eO3"/>
                             <constraint firstAttribute="trailing" secondItem="xnZ-9m-cKv" secondAttribute="trailing" constant="20" id="yEF-M8-cuq"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="actionBtnsStackView" destination="4Ua-ub-F0N" id="IAT-lx-Eku"/>
                         <outlet property="appsStackView" destination="f9e-4E-gbQ" id="2x1-Ij-r6Y"/>
                         <outlet property="downloadSelectedBtn" destination="q0y-CI-hQX" id="Evg-7E-QF2"/>
                         <outlet property="selectAllCB" destination="NrN-PM-0yG" id="Wy0-uE-ojA"/>
@@ -923,7 +908,7 @@
                 </viewController>
                 <customObject id="NhP-7g-tBg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="765.5" y="1012.5"/>
+            <point key="canvasLocation" x="733" y="1011.5"/>
         </scene>
         <!--Language-->
         <scene sceneID="Mrc-qd-q2r">

@@ -91,7 +91,8 @@ class LanguageChooserVC: NSViewController {
     func selfRestart() {
         let task = Process()
         task.launchPath = "/bin/sh"
-        task.arguments = ["-c", "sleep 0.2; open \"\(Bundle.main.bundlePath)\""]
+        task.arguments = ["-c", "sleep 0.3; open \"\(Bundle.main.bundlePath)\""]
+        //task.arguments = ["-c", "open \"\(Bundle.main.bundlePath)\""]
         task.launch()
         NSApplication.shared().terminate(nil)
     }
