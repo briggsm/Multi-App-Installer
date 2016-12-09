@@ -853,7 +853,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dSx-ho-6to">
-                                <rect key="frame" x="315" y="145" width="137" height="32"/>
+                                <rect key="frame" x="319" y="145" width="133" height="32"/>
                                 <buttonCell key="cell" type="push" title="Install Selected" bezelStyle="rounded" imagePosition="right" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eLE-uv-CBv">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -863,7 +863,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q0y-CI-hQX">
-                                <rect key="frame" x="158" y="145" width="157" height="32"/>
+                                <rect key="frame" x="162" y="145" width="157" height="32"/>
                                 <buttonCell key="cell" type="push" title="Download Selected" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IUb-EV-645">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -915,11 +915,11 @@
             <objects>
                 <viewController title="Language" id="808-u6-bvs" customClass="LanguageChooserVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="sz9-Px-CK7">
-                        <rect key="frame" x="0.0" y="0.0" width="213" height="107"/>
+                        <rect key="frame" x="0.0" y="0.0" width="184" height="107"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zbu-CI-MQR">
-                                <rect key="frame" x="151" y="13" width="48" height="32"/>
+                                <rect key="frame" x="68" y="13" width="48" height="32"/>
                                 <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSMenuOnStateTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MKw-Sr-9Fx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -931,18 +931,8 @@ DQ
                                     <action selector="okBtnClicked:" target="808-u6-bvs" id="xqh-mh-go1"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8e9-AY-1bV">
-                                <rect key="frame" x="14" y="13" width="47" height="32"/>
-                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSRefreshTemplate" imagePosition="overlaps" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SH8-RX-2yj">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="restartBtnClicked:" target="808-u6-bvs" id="oKi-cu-4VC"/>
-                                </connections>
-                            </button>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9aC-HQ-QHw">
-                                <rect key="frame" x="18" y="63" width="178" height="26"/>
+                                <rect key="frame" x="18" y="63" width="149" height="26"/>
                                 <popUpButtonCell key="cell" type="push" title="English" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jqu-VA-jle" id="7E2-yV-hBy">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -960,34 +950,27 @@ DQ
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
-                                <connections>
-                                    <action selector="languagePUBtnSelected:" target="808-u6-bvs" id="iPA-kT-Qif"/>
-                                </connections>
                             </popUpButton>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="8e9-AY-1bV" secondAttribute="bottom" constant="20" id="6oh-dT-ETA"/>
-                            <constraint firstItem="8e9-AY-1bV" firstAttribute="leading" secondItem="sz9-Px-CK7" secondAttribute="leading" constant="20" id="CRC-Si-ITI"/>
+                            <constraint firstItem="Zbu-CI-MQR" firstAttribute="centerX" secondItem="sz9-Px-CK7" secondAttribute="centerX" id="Cn0-ZA-OdT"/>
                             <constraint firstAttribute="bottom" secondItem="Zbu-CI-MQR" secondAttribute="bottom" constant="20" id="D9H-EG-dPD"/>
                             <constraint firstItem="9aC-HQ-QHw" firstAttribute="leading" secondItem="sz9-Px-CK7" secondAttribute="leading" constant="20" id="FZZ-iP-2i7"/>
                             <constraint firstAttribute="trailing" secondItem="9aC-HQ-QHw" secondAttribute="trailing" constant="20" id="KtQ-NE-kRK"/>
                             <constraint firstItem="9aC-HQ-QHw" firstAttribute="top" secondItem="sz9-Px-CK7" secondAttribute="top" constant="20" id="qeE-Jt-BkB"/>
-                            <constraint firstAttribute="trailing" secondItem="Zbu-CI-MQR" secondAttribute="trailing" constant="20" id="sZ1-rR-66W"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="languagePUBtn" destination="9aC-HQ-QHw" id="nPP-Fn-7fH"/>
+                        <outlet property="languagePUBtn" destination="9aC-HQ-QHw" id="Yyb-bw-wNp"/>
                         <outlet property="okBtn" destination="Zbu-CI-MQR" id="h7S-wn-lUY"/>
-                        <outlet property="restartBtn" destination="8e9-AY-1bV" id="Ssm-r8-mRk"/>
                     </connections>
                 </viewController>
                 <customObject id="jeH-Cd-jWx" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1216" y="777"/>
+            <point key="canvasLocation" x="1201" y="776.5"/>
         </scene>
     </scenes>
     <resources>
         <image name="NSMenuOnStateTemplate" width="12" height="12"/>
-        <image name="NSRefreshTemplate" width="11" height="15"/>
     </resources>
 </document>

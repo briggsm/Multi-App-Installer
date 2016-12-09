@@ -12,12 +12,9 @@ class LanguageChooserVC: NSViewController {
 
     @IBOutlet weak var languagePUBtn: NSPopUpButton!
     @IBOutlet weak var okBtn: NSButton!
-    @IBOutlet weak var restartBtn: NSButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setOnlyOkBtnEnabled()
         
         let currLangIso = getCurrLangIso()
         switch currLangIso {
@@ -30,40 +27,21 @@ class LanguageChooserVC: NSViewController {
         default:
             // Case where unknown/unsupported language exists on system.
             languagePUBtn.selectItem(withTitle: "English")
-            setOnlyRestartBtnEnabled()
-        }
-    }
-    
-    @IBAction func languagePUBtnSelected(_ sender: NSPopUpButton) {
-        print("languagePUBtnSelected")
-        let currLangIso = getCurrLangIso()
-        print("currLangIso: \(currLangIso)")
-        
-        // test - not working...
-        if let selectedRealId = languagePUBtn.selectedItem?.identifier {
-            print("selectedId(ident) \(selectedRealId)")
-        }
-        
-        if let selectedId = languagePUBtn.selectedItem?.accessibilityIdentifier() {
-            print("selectedId(accessIdent): \(selectedId)")
-            if currLangIso == selectedId {
-                setOnlyOkBtnEnabled()
-            } else {
-                setOnlyRestartBtnEnabled()
-            }
         }
     }
     
     @IBAction func okBtnClicked(_ sender: NSButton) {
-        self.dismiss(self)
-    }
-    
-    @IBAction func restartBtnClicked(_ sender: NSButton) {
         if let selectedId = languagePUBtn.selectedItem?.accessibilityIdentifier() {
-            UserDefaults.standard.setValue([selectedId], forKey: "AppleLanguages")
-            UserDefaults.standard.synchronize()
-            
-            selfRestart()
+            if selectedId == getCurrLangIso() {
+                // Dismiss this modal View Controller
+                self.dismiss(self)
+            } else {
+                // Change to new language & restart app
+                UserDefaults.standard.setValue([selectedId], forKey: "AppleLanguages")
+                UserDefaults.standard.synchronize()
+                
+                selfRestart()
+            }
         }
     }
     
@@ -76,16 +54,6 @@ class LanguageChooserVC: NSViewController {
         currLangIso = currLangIso.substring(to: currLangIso.index(currLangIso.startIndex, offsetBy: 2))
         
         return currLangIso
-    }
-    
-    func setOnlyOkBtnEnabled() {
-        okBtn.isEnabled = true
-        restartBtn.isEnabled = false
-    }
-    
-    func setOnlyRestartBtnEnabled() {
-        restartBtn.isEnabled = true
-        okBtn.isEnabled = false
     }
     
     func selfRestart() {
