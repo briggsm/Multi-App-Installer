@@ -31,7 +31,7 @@ if [ "$1" == "-appMeta" ]; then
 		desc="TeamViewer Host"
     fi
 
-	echo "$desc||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewerHost.app|/Applications/TeamViewer.app"
+	echo 	"$desc||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewerHost.app|/Applications/TeamViewer.app"
 fi
 
 # Install

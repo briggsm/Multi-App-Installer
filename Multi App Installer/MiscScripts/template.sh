@@ -23,7 +23,19 @@ if [ "$1" == "-appMeta" ]; then
 	# (4) - Install as root or user (text is just "root" or "user" [w/o the quotes])
 	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
-	# e.g.: echo "gimp||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
+	# If you want a localized description for the App Name, you can do something like this:
+	# Get Localized Description
+	if [ "$2" == "tr" ]; then
+		desc="[tr]Gimp"
+	elif [ "$2" == "ru" ]; then
+		desc="[ru]Gimp"
+	else
+		desc="Gimp"
+	fi
+	# e.g.: echo "$desc||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
+	
+	# If you want same App Name, no matter what language, just hard code it:
+	# e.g.: echo "Gimp||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
 	# e.g.: echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewer Host.app|/Applications/TeamViewer.app"
 
 	echo "A.B.C. Cool App||http://example.com/download/abc.dmg||ABC.app||user||/Applications/ABC.app"

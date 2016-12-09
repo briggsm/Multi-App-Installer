@@ -62,7 +62,8 @@ class LanguageChooserVC: NSViewController {
         if let selectedId = languagePUBtn.selectedItem?.accessibilityIdentifier() {
             UserDefaults.standard.setValue([selectedId], forKey: "AppleLanguages")
             UserDefaults.standard.synchronize()
-            NSApplication.shared().terminate(self)
+            
+            selfRestart()
         }
     }
     
@@ -85,5 +86,13 @@ class LanguageChooserVC: NSViewController {
     func setOnlyRestartBtnEnabled() {
         restartBtn.isEnabled = true
         okBtn.isEnabled = false
+    }
+    
+    func selfRestart() {
+        let task = Process()
+        task.launchPath = "/bin/sh"
+        task.arguments = ["-c", "sleep 0.2; open \"\(Bundle.main.bundlePath)\""]
+        task.launch()
+        NSApplication.shared().terminate(nil)
     }
 }

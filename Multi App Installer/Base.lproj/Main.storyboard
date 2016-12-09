@@ -925,17 +925,17 @@
             </objects>
             <point key="canvasLocation" x="765.5" y="1012.5"/>
         </scene>
-        <!--Language Chooser-->
+        <!--Language-->
         <scene sceneID="Mrc-qd-q2r">
             <objects>
-                <viewController title="Language Chooser" id="808-u6-bvs" customClass="LanguageChooserVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Language" id="808-u6-bvs" customClass="LanguageChooserVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="sz9-Px-CK7">
-                        <rect key="frame" x="0.0" y="0.0" width="246" height="112"/>
+                        <rect key="frame" x="0.0" y="0.0" width="213" height="107"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zbu-CI-MQR">
-                                <rect key="frame" x="173" y="13" width="59" height="32"/>
-                                <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MKw-Sr-9Fx">
+                                <rect key="frame" x="151" y="13" width="48" height="32"/>
+                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSMenuOnStateTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MKw-Sr-9Fx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -947,8 +947,8 @@ DQ
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8e9-AY-1bV">
-                                <rect key="frame" x="14" y="13" width="84" height="32"/>
-                                <buttonCell key="cell" type="push" title="Restart" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SH8-RX-2yj">
+                                <rect key="frame" x="14" y="13" width="47" height="32"/>
+                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSRefreshTemplate" imagePosition="overlaps" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SH8-RX-2yj">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -957,7 +957,7 @@ DQ
                                 </connections>
                             </button>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9aC-HQ-QHw">
-                                <rect key="frame" x="79" y="68" width="90" height="26"/>
+                                <rect key="frame" x="18" y="63" width="178" height="26"/>
                                 <popUpButtonCell key="cell" type="push" title="English" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jqu-VA-jle" id="7E2-yV-hBy">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -984,7 +984,8 @@ DQ
                             <constraint firstAttribute="bottom" secondItem="8e9-AY-1bV" secondAttribute="bottom" constant="20" id="6oh-dT-ETA"/>
                             <constraint firstItem="8e9-AY-1bV" firstAttribute="leading" secondItem="sz9-Px-CK7" secondAttribute="leading" constant="20" id="CRC-Si-ITI"/>
                             <constraint firstAttribute="bottom" secondItem="Zbu-CI-MQR" secondAttribute="bottom" constant="20" id="D9H-EG-dPD"/>
-                            <constraint firstItem="9aC-HQ-QHw" firstAttribute="centerX" secondItem="sz9-Px-CK7" secondAttribute="centerX" id="NxY-4X-I2M"/>
+                            <constraint firstItem="9aC-HQ-QHw" firstAttribute="leading" secondItem="sz9-Px-CK7" secondAttribute="leading" constant="20" id="FZZ-iP-2i7"/>
+                            <constraint firstAttribute="trailing" secondItem="9aC-HQ-QHw" secondAttribute="trailing" constant="20" id="KtQ-NE-kRK"/>
                             <constraint firstItem="9aC-HQ-QHw" firstAttribute="top" secondItem="sz9-Px-CK7" secondAttribute="top" constant="20" id="qeE-Jt-BkB"/>
                             <constraint firstAttribute="trailing" secondItem="Zbu-CI-MQR" secondAttribute="trailing" constant="20" id="sZ1-rR-66W"/>
                         </constraints>
@@ -997,7 +998,11 @@ DQ
                 </viewController>
                 <customObject id="jeH-Cd-jWx" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1242" y="761"/>
+            <point key="canvasLocation" x="1216" y="777"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="NSMenuOnStateTemplate" width="12" height="12"/>
+        <image name="NSRefreshTemplate" width="11" height="15"/>
+    </resources>
 </document>
