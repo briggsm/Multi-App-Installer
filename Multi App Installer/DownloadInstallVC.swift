@@ -298,15 +298,17 @@ class DownloadInstallVC: NSViewController {
         
         performSegue(withIdentifier: "LanguageChooserVC", sender: self)
     }
-    
+
+    /*
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         //if segue.destinationViewController is LanguageChooserVC {
         if segue.destinationController is LanguageChooserVC {
-            let langChooserVC = segue.destinationController as! LanguageChooserVC
+            //let langChooserVC = segue.destinationController as! LanguageChooserVC
             //dir2VC.delegate = self
             //dir2VC.title = dirLevel2Title
         }
     }
+    */
     
     // MARK: IB Actions
     @IBAction func selectAllCBToggled(_ sender: NSButton) {
