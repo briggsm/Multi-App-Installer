@@ -46,7 +46,7 @@ class LanguageChooserVC: NSViewController {
     }
     
     func getCurrLangIso() -> String {
-        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! Array<String>
+        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! [String]
         
         var currLangIso = currLangArr[0]
         

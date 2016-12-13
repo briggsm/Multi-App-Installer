@@ -5,7 +5,7 @@
 # -i => Install
 
 function echoUsage {
-    echo "Usage: $0 [-appMeta | -i path/to/sourceFolder/]"
+    echo "Usage: $0 [-appMeta [en|tr|ru] | -i path/to/sourceFolder/]"
 }
 
 if [ "$1" != "-appMeta" ] && [ "$1" != "-i" ]; then
@@ -32,6 +32,7 @@ if [ "$1" == "-appMeta" ]; then
     fi
     
 	echo "$desc||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
+    exit 0
 fi
 
 # Install

@@ -5,7 +5,7 @@
 # -i => Install
 
 function echoUsage {
-	echo "Usage: $0 [-appMeta | -i path/to/sourceFolder/]"
+	echo "Usage: $0 [-appMeta [en|tr|ru] | -i path/to/sourceFolder/]"
 }
 
 if [ "$1" != "-appMeta" ] && [ "$1" != "-i" ]; then
@@ -39,6 +39,7 @@ if [ "$1" == "-appMeta" ]; then
 	# e.g.: echo "TeamViewer Host||http://downloadeu1.teamviewer.com/download/TeamViewerHost.dmg||TeamViewerHost.dmg||root||/Applications/TeamViewer Host.app|/Applications/TeamViewer.app"
 
 	echo "A.B.C. Cool App||http://example.com/download/abc.dmg||ABC.app||user||/Applications/ABC.app"
+    exit 0
 fi
 
 # Install

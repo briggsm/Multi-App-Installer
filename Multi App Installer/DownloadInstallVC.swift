@@ -20,8 +20,9 @@ class DownloadInstallVC: NSViewController {
 
     // MARK: Scripts
     var scriptsDirPath: String = ""
-    var scriptsToQuery = Array<String>()
+    var scriptsToQuery = [String]()
     
+    // MARK: Session
     var urlSession: URLSession = URLSession()
     
     // MARK: Defaults
@@ -120,7 +121,7 @@ class DownloadInstallVC: NSViewController {
         // Build the list of Apps for the Main GUI
         for scriptToQuery in scriptsToQuery {
             
-            // Add to appMetaDict. Break out of loop if anything looks wrong.
+            // Add to appMetaDict. Continue loop if anything looks wrong.
             let appMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-appMeta", getCurrLangIso()])
             if appMetaTaskOutput != "" {
                 let appMetaArr = appMetaTaskOutput.components(separatedBy: "||")
@@ -128,15 +129,15 @@ class DownloadInstallVC: NSViewController {
                 // TODO - maybe add some sanity checks here...
                 guard let downloadUrl = URL(string: appMetaArr[1]) else {
                     printLog(str: "Error: cannot create URL from this string: \(appMetaArr[1])")
-                    break  // out of for loop
+                    continue  // to next iteration of for loop
                 }
                 
                 let proofAppExistsPathsArr = appMetaArr[4].components(separatedBy: "|")
                 appMetaDict[scriptToQuery] = AppMeta(appDescription: appMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: appMetaArr[2], installUser: appMetaArr[3], proofAppExistsPaths: proofAppExistsPathsArr)
             }
             
-            // Selection Checkbox (with App Description)
             if let appMeta = appMetaDict[scriptToQuery] {
+                // Selection Checkbox (with App Description)
                 var selectionCB: NSButton
                 if #available(OSX 10.12, *) {
                     selectionCB = NSButton(checkboxWithTitle: appMeta.appDescription, target: nil, action: nil)
@@ -665,7 +666,7 @@ class DownloadInstallVC: NSViewController {
     }
     
     func getCurrLangIso() -> String {
-        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! Array<String>
+        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! [String]
         
         var currLangIso = currLangArr[0]
         
