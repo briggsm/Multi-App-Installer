@@ -8,12 +8,12 @@ function echoUsage {
     echo "Usage: $0 [-appMeta [en|tr|ru] | -i path/to/sourceFolder/]"
 }
 
-if [ "$1" != "-appMeta" ] && [ "$1" != "-i" ]; then
+if [[ "$1" != "-appMeta"* ]] && [[ "$1" != "-i"* ]]; then
     echoUsage
     exit 1
 fi
 
-if [ "$1" == "-appMeta" ]; then
+if [[ "$1" == "-appMeta"* ]]; then
 	# Note: format is: (1)||(2)||(3)||(4)||(5)
 	#   All must be present, even if null!
 	# (1) - App Description (user-friendly name of the App)
@@ -23,9 +23,9 @@ if [ "$1" == "-appMeta" ]; then
 	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
     # Get Localized Description
-	if [ "$2" == "tr" ]; then
+	if [ "$1" == "-appMeta tr" ]; then
         desc="[tr]Gimp"
-	elif [ "$2" == "ru" ]; then
+	elif [ "$1" == "-appMeta ru" ]; then
 		desc="[ru]Gimp"
 	else
 		desc="Gimp"
@@ -36,11 +36,12 @@ if [ "$1" == "-appMeta" ]; then
 fi
 
 # Install
-if [ "$1" == "-i" ]; then
-	if [ ! -e "$2/gimp.dmg" ]; then
-		echo "Gimp is missing from sourceFolder: $2"
+if [[ "$1" == "-i"* ]]; then
+    sourceFolder=${1:3} # Strip off first 3 characters from $1 (-i )
+	if [ ! -e "$sourceFolder/gimp.dmg" ]; then
+		echo "Gimp is missing from sourceFolder: $sourceFolder"
 	else
-		hdiutil mount -nobrowse -quiet $2/gimp.dmg
+		hdiutil mount -nobrowse -quiet $sourceFolder/gimp.dmg
 		cp -R "/Volumes/Gimp 2.8.16/GIMP.app" /Applications
 		hdiutil unmount -quiet "/Volumes/Gimp 2.8.16"
 		echo "Installed Gimp 2.8.16-1"

@@ -12,8 +12,18 @@ struct AppMeta {
     var appDescription: String
     var downloadUrl: URL
     var saveAsFilename: String
-    var installUser: String  // "root" or "user"
+    var installUser: RunScriptAs
     var proofAppExistsPaths: [String]
+}
+
+enum RunScriptAs {
+    case User
+    case Root
+}
+
+enum RunScriptOnThread {
+    case Main
+    case Bg
 }
 
 class DownloadInstallVC: NSViewController {
@@ -119,23 +129,36 @@ class DownloadInstallVC: NSViewController {
         self.view.window?.title = "\(appName) (v\(appVersion))"
         
         // Build the list of Apps for the Main GUI
-        for scriptToQuery in scriptsToQuery {
-            
-            // Add to appMetaDict. Continue loop if anything looks wrong.
-            let appMetaTaskOutput = runSyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-appMeta", getCurrLangIso()])
-            if appMetaTaskOutput != "" {
-                let appMetaArr = appMetaTaskOutput.components(separatedBy: "||")
-                
-                // TODO - maybe add some sanity checks here...
-                guard let downloadUrl = URL(string: appMetaArr[1]) else {
-                    printLog(str: "Error: cannot create URL from this string: \(appMetaArr[1])")
-                    continue  // to next iteration of for loop
+        let outputHandler: ([String : String]) -> (Void) = { outputDict in
+            for (script, output) in outputDict {
+                if output != "" {
+                    let appMetaArr = output.components(separatedBy: "||")
+                    
+                    // Sanity Checks
+                    guard appMetaArr.count == 5 else {
+                        self.printLog(str: "appMetaArr.count (\(appMetaArr.count)) is not equal to 5! Failing. Format for -appMeta is e.g.: desc||downloadUrl||saveAsFilename||installAsRootOrUser||proofPaths")
+                        continue  // to next iteration of for loop
+                    }
+                    guard let downloadUrl = URL(string: appMetaArr[1]) else {
+                        self.printLog(str: "ERROR: cannot create URL from this string: \(appMetaArr[1])")
+                        continue  // to next iteration of for loop
+                    }
+                    guard appMetaArr[3] == "root" || appMetaArr[3] == "user" else {
+                        self.printLog(str: "ERROR: appMeta[3] is not equal to 'root' or 'user'!")
+                        continue  // to next iteration of for loop
+                    }
+                    
+                    // Split proof paths, if there are more than 1.
+                    let proofAppExistsPathsArr = appMetaArr[4].components(separatedBy: "|")
+                    
+                    // Add to dictionary
+                    self.appMetaDict[script] = AppMeta(appDescription: appMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: appMetaArr[2], installUser: appMetaArr[3] == "root" ? .Root : .User, proofAppExistsPaths: proofAppExistsPathsArr)
                 }
-                
-                let proofAppExistsPathsArr = appMetaArr[4].components(separatedBy: "|")
-                appMetaDict[scriptToQuery] = AppMeta(appDescription: appMetaArr[0], downloadUrl: downloadUrl, saveAsFilename: appMetaArr[2], installUser: appMetaArr[3], proofAppExistsPaths: proofAppExistsPathsArr)
             }
-            
+        }
+        run(theseScripts: scriptsToQuery, withArgs: ["-appMeta \(getCurrLangIso())"], asUser: .User, onThread: .Main, withOutputHandler: outputHandler)
+        
+        for scriptToQuery in scriptsToQuery {
             if let appMeta = appMetaDict[scriptToQuery] {
                 // Selection Checkbox (with App Description)
                 var selectionCB: NSButton
@@ -329,7 +352,8 @@ class DownloadInstallVC: NSViewController {
         // Collect all the "root" tasks - to run all at one time via AppleScript (so app asks user for PW just once)
         // All the "user" tasks can be kicked off as we come to them.
         
-        var allInstallScriptsArr = [String]()
+        var allScriptsToQueryAsRootArr = [String]()
+        var allScriptsToQueryAsUserArr = [String]()
         
         for entryStackView in appsStackView.views as! [NSStackView] {
             if let selectionCB = entryStackView.views.first as! NSButton?, let scriptToQuery = selectionCB.identifier, let installBtn = installBtnDict[scriptToQuery], let appMeta = appMetaDict[scriptToQuery] {
@@ -337,21 +361,45 @@ class DownloadInstallVC: NSViewController {
                     isInstallingDict[scriptToQuery] = true
                     refreshAllGuiViews()
                     
-                    if appMeta.installUser == "root" {
-                        // Install as root - gather all together, then kick of 1 after this loop is done. (so user only enters PW once)
-                        allInstallScriptsArr.append(scriptToQuery)
-                    } else {
-                        // Install as user - kick it off right now
-                        _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolder])
+                    if appMeta.installUser == .Root {
+                        // Gather all together, then kick of 1 after this loop is done. (so user only enters PW once)
+                        allScriptsToQueryAsRootArr.append(scriptToQuery)
+                    } else {  // .User
+                        allScriptsToQueryAsUserArr.append(scriptToQuery)
                     }
                 }
             }
         }
         
-        // Run as root, all the ones that need to be run as root.
-        let allInstallScriptsStr = allInstallScriptsArr.joined(separator: " ")
-        if allInstallScriptsStr != "" {
-            runBgInstallsAsRoot(allInstallScriptsStr: allInstallScriptsStr)
+        
+        // Root - run root scripts first, so PW can be prompted for right away (don't have to wait for all User scripts to run & complete first.)
+        if allScriptsToQueryAsRootArr.count > 0 {
+            let outputHandler: ([String : String]) -> (Void) = { outputDict in
+                //For each of the scripts, say that we're done installing
+                for scriptToQuery in allScriptsToQueryAsRootArr {
+                    self.isInstallingDict[scriptToQuery] = false
+                }
+                DispatchQueue.main.async(execute: {
+                    self.refreshAllGuiViews()
+                })
+            }
+            // Note: if there are 3 scripts (for example), outputHandler will not be called until all 3 are completely finished running. Must be this way if we only want to ask the user for Root PW one time.
+            run(theseScripts: allScriptsToQueryAsRootArr, withArgs: ["-i \(sourceFolder)"], asUser: .Root, onThread: .Bg, withOutputHandler: outputHandler)
+        }
+
+        // User
+        if allScriptsToQueryAsUserArr.count > 0 {
+            // But run User scripts 1 at a time, so at least user can see some occasional progress on the GUI
+            for scriptToQuery in allScriptsToQueryAsUserArr {
+                let outputHandler: ([String : String]) -> (Void) = { outputDict in
+                    // Say that we're done installing
+                    self.isInstallingDict[scriptToQuery] = false
+                    DispatchQueue.main.async(execute: {
+                        self.refreshAllGuiViews()
+                    })
+                }
+                run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .User, onThread: .Bg, withOutputHandler: outputHandler)
+            }
         }
     }
     
@@ -387,16 +435,22 @@ class DownloadInstallVC: NSViewController {
             refreshAllGuiViews()
             
             if let appMeta = appMetaDict[scriptToQuery] {
-                if appMeta.installUser == "root" {
-                    runBgInstallsAsRoot(allInstallScriptsStr: scriptToQuery)
-                } else {
-                    _ = runAsyncTaskAsUser(scriptToQuery: scriptToQuery, arguments: ["-i", sourceFolder])
+                let outputHandler: ([String : String]) -> (Void) = { outputDict in
+                    self.isInstallingDict[scriptToQuery] = false
+                    DispatchQueue.main.async(execute: {
+                        self.refreshAllGuiViews()
+                    })
+                }
+                if appMeta.installUser == .Root {
+                    run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .Root, onThread: .Bg, withOutputHandler: outputHandler)
+                } else {  // .Main
+                    run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .User, onThread: .Bg, withOutputHandler: outputHandler)
                 }
             }
         }
     }
     
-    // MARK: Tasks
+    // MARK: Download Task
     func startDownloadTask(scriptToQuery: String, downloadUrl: URL) {
         self.printLog(str: "----------")
         self.printLog(str: "Starting Download: \(downloadUrl)")
@@ -408,118 +462,78 @@ class DownloadInstallVC: NSViewController {
         refreshAllGuiViews()  // I think not necessary here, but won't hurt.
     }
     
-    func runSyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
-        // Note: Purposely running in Main thread because it's not going take that long to run each of our tasks
+    // MARK: Run Scripts
+    // Note: This is the function the code is expected to call when wanting to run/query any script(s)
+    func run(theseScripts: [String], withArgs: [String], asUser: RunScriptAs, onThread: RunScriptOnThread, withOutputHandler: ((_ outputDict: [String : String]) -> Void)?) {
+        printLog(str: "----------")
+        printLog(str: "runScripts: \(theseScripts), withArgs: \(withArgs), asUser: \(asUser), onThread: \(onThread)")
         
-        printLog(str: "==========")
-        printLog(str: "runSyncTaskAsUser: \(scriptToQuery) \(arguments[0]) ", terminator: "")  // Finish this print statement at end of runTask() function
-        
-        // Make sure we can find the script file. Return if not.
-        let taskNameArr = scriptToQuery.components(separatedBy: ".")
-        guard let path = Bundle.main.path(forResource: "Scripts/" + taskNameArr[0], ofType:taskNameArr[1]) else {
-            printLog(str: "\n  Unable to locate: \(scriptToQuery)!")
-            return "Unable to locate: \(scriptToQuery)!"
+        if onThread == .Bg {
+            let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
+            taskQueue.async {
+                self.run(theseScripts: theseScripts, withArgs: withArgs, asUser: asUser, withOutputHandler: withOutputHandler)
+            }
+        } else {  // .Main
+            run(theseScripts: theseScripts, withArgs: withArgs, asUser: asUser, withOutputHandler: withOutputHandler)
         }
-        
-        // Init outputPipe
-        let outputPipe = Pipe()
-        
-        // Setup & Launch our process
-        let ps: Process = Process()
-        ps.launchPath = path
-        ps.arguments = arguments
-        ps.standardOutput = outputPipe
-        ps.launch()
-        ps.waitUntilExit()
-        
-        // Read everything the outputPipe captured from stdout
-        let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
-        var outputString = String(data: data, encoding: String.Encoding.utf8) ?? ""
-        outputString = outputString.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        // Return the output
-        printLog(str: "[output: \(outputString)]")
-        return outputString
     }
     
-    func runAsyncTaskAsUser(scriptToQuery: String, arguments: [String]) -> String {
-        printLog(str: "==========")
-        printLog(str: "runAsyncTaskAsUser: \(scriptToQuery) \(arguments[0])")
+    // Note: could call this function directly, but it's more clear if called from: run(theseScriptsWithArgsAsUserOnThreadWithOutputHandler)
+    func run(theseScripts: [String], withArgs: [String], asUser: RunScriptAs, withOutputHandler: ((_ outputDict: [String : String]) -> Void)?) {
+        // Write AppleScript
+        let allScriptsStr = theseScripts.joined(separator: " ")
+        let argsStr = withArgs.joined(separator: " ")
+        var appleScriptStr = "do shell script \"./runScripts.sh '\(argsStr)' \(allScriptsStr)\""
+        if asUser == .Root {
+            appleScriptStr += " with administrator privileges"
+        }
+        printLog(str: " appleScriptStr: \(appleScriptStr)")
         
-        // Setup & Launch our process Asynchronously
-        let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
+        if let asObject = NSAppleScript(source: appleScriptStr) {
+            // Run AppleScript
+            var asError: NSDictionary?
+            let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
+            self.printLog(str: " [asOutput: \(asOutput.stringValue ?? "")]")
+            
+            // Parse & Handle AppleScript output
+            let outputArr = self.parseAppleScript(asOutput: asOutput, asError: asError)
+            handle(theseScripts: theseScripts, outputArr: outputArr, withOutputHandler: withOutputHandler)
+        }
+    }
+    
+    func parseAppleScript(asOutput: NSAppleEventDescriptor, asError: NSDictionary?) -> [String] {
+        if let err = asError {
+            printLog(str: "AppleScript Error: \(err)")
+            return []
+        } else {
+            // First tidy-up str a bit
+            if let asOutputRaw = asOutput.stringValue {
+                var asOutputStr = asOutputRaw.replacingOccurrences(of: "\r\n", with: "\n") // just incase
+                asOutputStr = asOutputStr.replacingOccurrences(of: "\r", with: "\n") // becasue AppleScript returns line endings with '\r'
+                let asOutputArr = asOutputStr.components(separatedBy: "\n")
+                return asOutputArr
+            }
+        }
         
-        taskQueue.async {
-            // Make sure we can find the script file. Return if not.
-            let taskNameArr = scriptToQuery.components(separatedBy: ".")
-            guard let path = Bundle.main.path(forResource: "Scripts/" + taskNameArr[0], ofType:taskNameArr[1]) else {
-                self.printLog(str: "  Unable to locate: \(scriptToQuery)!")
+        return [""]
+    }
+    
+    func handle(theseScripts: [String], outputArr: [String], withOutputHandler: ((_ outputDict: [String : String]) -> Void)?) {
+        if let outputHandler = withOutputHandler {
+            guard outputArr.count == theseScripts.count else {
+                self.printLog(str: "*ERROR: outputArray.count (\(outputArr.count)) is not equal to scripts.count (\(theseScripts.count))")
+                self.printLog(str: "*  outputArr: \(outputArr)")
                 return
             }
             
-            let ps: Process = Process()
-            ps.launchPath = path
-            ps.arguments = arguments
-            ps.terminationHandler = {
-                task in
-                DispatchQueue.main.async(execute: {
-                    if arguments[0] == "-i" {
-                        self.isInstallingDict[scriptToQuery] = false
-                        self.refreshAllGuiViews()
-                    }
-                })
+            var outputDict = [String : String]()
+            var idx = 0
+            for script in theseScripts {
+                outputDict[script] = outputArr[idx]
+                idx += 1
             }
             
-            // Init outputPipe
-            let outputPipe = Pipe()
-            ps.standardOutput = outputPipe
-            
-            ps.launch()
-            ps.waitUntilExit()
-            
-            // Read everything the outputPipe captured from stdout
-            let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            var outputString = String(data: data, encoding: String.Encoding.utf8) ?? ""
-            outputString = outputString.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            self.printLog(str: "[output(\(scriptToQuery)): \(outputString)]")
-        }
-        
-        return ""  // Return empty string if no errors
-    }
-    
-    func runBgInstallsAsRoot(allInstallScriptsStr: String) {
-        printLog(str: "=+=+=+=+=+")
-        printLog(str: "runInstallsAsRoot()")
-
-        let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
-        
-        taskQueue.async {
-            // AppleScript
-            let appleScriptStr = "do shell script \"./runIs.sh '\(self.sourceFolder)' \(allInstallScriptsStr)\" with administrator privileges"
-            self.printLog(str: "appleScriptStr: \(appleScriptStr)")
-            
-            // Run AppleScript
-            var asError: NSDictionary?
-            if let asObject = NSAppleScript(source: appleScriptStr) {
-                let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
-                
-                if let err = asError {
-                    self.printLog(str: "AppleScript Error: \(err)")
-                } else {
-                    self.printLog(str: asOutput.stringValue ?? "Note!: AS Output has 'nil' for stringValue")
-                }
-                
-                // For each of the scripts, say that we're done installing
-                let allInstallScriptsArr = allInstallScriptsStr.components(separatedBy: " ")
-                for scriptToQuery in allInstallScriptsArr {
-                    self.isInstallingDict[scriptToQuery] = false
-                }
-                DispatchQueue.main.async(execute: {
-                    self.refreshAllGuiViews()
-                })
-            }
-            self.printLog(str: "=-=-=-=-=-")
+            outputHandler(outputDict)
         }
     }
     
@@ -636,12 +650,12 @@ class DownloadInstallVC: NSViewController {
     }
     
     func changeCurrentDirToScriptsDir() {
-        guard let runIsPath = Bundle.main.path(forResource: "Scripts/runIs", ofType:"sh") else {
-            printLog(str: "\n  Unable to locate: Scripts/runIs.sh!")
+        guard let runScriptsPath = Bundle.main.path(forResource: "Scripts/runScripts", ofType:"sh") else {
+            printLog(str: "\n  Unable to locate: Scripts/runScripts.sh!")
             return
         }
         
-        scriptsDirPath = String(runIsPath.characters.dropLast(8))  // drop off: "runIs.sh"
+        scriptsDirPath = String(runScriptsPath.characters.dropLast(13))  // drop off: "runScripts.sh"
         if FileManager.default.changeCurrentDirectoryPath(scriptsDirPath) {
             //printLog(str: "success changing dir to: \(scriptsDirPath)")
         } else {
@@ -653,15 +667,15 @@ class DownloadInstallVC: NSViewController {
         do {
             var scriptsDirContents = try FileManager.default.contentsOfDirectory(atPath: scriptsDirPath)
             
-            // Remove "runIs.sh" from the list of scripts.
-            if let index = scriptsDirContents.index(of: "runIs.sh") {
+            // Remove "runScripts.sh" from the list of scripts.
+            if let index = scriptsDirContents.index(of: "runScripts.sh") {
                 scriptsDirContents.remove(at: index)
             }
             
             scriptsToQuery = scriptsDirContents
-            printLog(str: "scriptsToQuery: \(scriptsToQuery)")
         } catch {
             printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
+            scriptsToQuery = []
         }
     }
     
