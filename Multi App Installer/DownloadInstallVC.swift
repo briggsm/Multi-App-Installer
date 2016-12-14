@@ -322,6 +322,53 @@ class DownloadInstallVC: NSViewController {
     }
 
     // MARK: IB Actions
+    func downloadBtnClicked(btn: NSButton) {
+        let scriptToQuery = btn.identifier ?? ""
+        if !scriptToQuery.isEmpty {
+            if let appMeta = appMetaDict[scriptToQuery] {
+                if btn.state == NSOnState {
+                    // === Start the download Task ===
+                    startDownloadTask(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
+                } else {
+                    // === Cancel the download ===
+                    urlSession.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
+                        for downloadTask in downloadTasks {
+                            if downloadTask.taskDescription == scriptToQuery {
+                                self.printLog(str: "----------")
+                                self.printLog(str: "Canceling Task: \(scriptToQuery)")
+                                downloadTask.cancel()
+                                self.isDownloadingDict[scriptToQuery] = false
+                                self.refreshAllGuiViews()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func installBtnClicked(installBtn: NSButton) {
+        let scriptToQuery = installBtn.identifier ?? ""
+        if !scriptToQuery.isEmpty {
+            isInstallingDict[scriptToQuery] = true
+            refreshAllGuiViews()
+            
+            if let appMeta = appMetaDict[scriptToQuery] {
+                let outputHandler: ([String : String]) -> (Void) = { outputDict in
+                    self.isInstallingDict[scriptToQuery] = false
+                    DispatchQueue.main.async(execute: {
+                        self.refreshAllGuiViews()
+                    })
+                }
+                if appMeta.installUser == .Root {
+                    run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .Root, onThread: .Bg, withOutputHandler: outputHandler)
+                } else {  // .Main
+                    run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .User, onThread: .Bg, withOutputHandler: outputHandler)
+                }
+            }
+        }
+    }
+    
     @IBAction func selectAllBtnToggled(_ sender: NSButton) {
         let newState = selectAllBtn.state
         
@@ -403,53 +450,6 @@ class DownloadInstallVC: NSViewController {
         }
     }
     
-    func downloadBtnClicked(btn: NSButton) {
-        let scriptToQuery = btn.identifier ?? ""
-        if !scriptToQuery.isEmpty {
-            if let appMeta = appMetaDict[scriptToQuery] {
-                if btn.state == NSOnState {
-                    // === Start the download Task ===
-                    startDownloadTask(scriptToQuery: scriptToQuery, downloadUrl: appMeta.downloadUrl)
-                } else {
-                    // === Cancel the download ===
-                    urlSession.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
-                        for downloadTask in downloadTasks {
-                            if downloadTask.taskDescription == scriptToQuery {
-                                self.printLog(str: "----------")
-                                self.printLog(str: "Canceling Task: \(scriptToQuery)")
-                                downloadTask.cancel()
-                                self.isDownloadingDict[scriptToQuery] = false
-                                self.refreshAllGuiViews()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    func installBtnClicked(installBtn: NSButton) {
-        let scriptToQuery = installBtn.identifier ?? ""
-        if !scriptToQuery.isEmpty {
-            isInstallingDict[scriptToQuery] = true
-            refreshAllGuiViews()
-            
-            if let appMeta = appMetaDict[scriptToQuery] {
-                let outputHandler: ([String : String]) -> (Void) = { outputDict in
-                    self.isInstallingDict[scriptToQuery] = false
-                    DispatchQueue.main.async(execute: {
-                        self.refreshAllGuiViews()
-                    })
-                }
-                if appMeta.installUser == .Root {
-                    run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .Root, onThread: .Bg, withOutputHandler: outputHandler)
-                } else {  // .Main
-                    run(theseScripts: [scriptToQuery], withArgs: ["-i \(sourceFolder)"], asUser: .User, onThread: .Bg, withOutputHandler: outputHandler)
-                }
-            }
-        }
-    }
-    
     // MARK: Download Task
     func startDownloadTask(scriptToQuery: String, downloadUrl: URL) {
         self.printLog(str: "----------")
@@ -469,7 +469,7 @@ class DownloadInstallVC: NSViewController {
         printLog(str: "runScripts: \(theseScripts), withArgs: \(withArgs), asUser: \(asUser), onThread: \(onThread)")
         
         if onThread == .Bg {
-            let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
+            let taskQueue = DispatchQueue.global(qos: .userInitiated)
             taskQueue.async {
                 self.run(theseScripts: theseScripts, withArgs: withArgs, asUser: asUser, withOutputHandler: withOutputHandler)
             }
@@ -492,6 +492,7 @@ class DownloadInstallVC: NSViewController {
         if let asObject = NSAppleScript(source: appleScriptStr) {
             // Run AppleScript
             var asError: NSDictionary?
+            printLog(str: "**temp: right before AS call.")
             let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
             self.printLog(str: " [asOutput: \(asOutput.stringValue ?? "")]")
             

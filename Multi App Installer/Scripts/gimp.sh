@@ -41,10 +41,16 @@ if [[ "$1" == "-i"* ]]; then
 	if [ ! -e "$sourceFolder/gimp.dmg" ]; then
 		echo "Gimp is missing from sourceFolder: $sourceFolder"
 	else
-		hdiutil mount -nobrowse -quiet $sourceFolder/gimp.dmg
-		cp -R "/Volumes/Gimp 2.8.18/GIMP.app" /Applications
-		hdiutil unmount -quiet "/Volumes/Gimp 2.8.18"
-		echo "Installed Gimp 2.8.16-1"
+		# hdiutil mount -nobrowse -quiet $sourceFolder/gimp.dmg
+		# cp -R "/Volumes/Gimp 2.8.18/GIMP.app" /Applications
+		# hdiutil unmount -quiet "/Volumes/Gimp 2.8.18"
+		# echo "Installed Gimp 2.8.18-1"
+		
+		hdiutil mount -nobrowse -quiet -mountpoint /Volumes/Gimp $sourceFolder/gimp.dmg
+		cp -R "/Volumes/Gimp/GIMP.app" /Applications
+		hdiutil unmount -quiet "/Volumes/Gimp"
+		echo "Installed Gimp 2.8.18-1"
+		
 	fi
 	exit 0
 fi
