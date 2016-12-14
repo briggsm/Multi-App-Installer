@@ -24,14 +24,14 @@ if [[ "$1" == "-appMeta"* ]]; then
 
     # Get Localized Description & URL
 	if [ "$1" == "-appMeta tr" ]; then
-        desc="Thunderbird (Türkçe)"
-		url="https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=tr"
+        desc="Thunderbird 45.5.1 (Türkçe)"
+		url="https://download.mozilla.org/?product=thunderbird-45.5.1-SSL&os=osx&lang=tr"
 	elif [ "$1" == "-appMeta ru" ]; then
-		desc="Thunderbird (Русский)"
-		url="https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=ru"
+		desc="Thunderbird 45.5.1 (Русский)"
+		url="https://download.mozilla.org/?product=thunderbird-45.5.1-SSL&os=osx&lang=ru"
 	else
-		desc="Thunderbird (English)"
-		url="https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=en-US"
+		desc="Thunderbird 45.5.1 (English)"
+		url="https://download.mozilla.org/?product=thunderbird-45.5.1-SSL&os=osx&lang=en-US"
     fi
 
 	echo "$desc||$url||thunderbird.dmg||user||/Applications/thunderbird.app"
