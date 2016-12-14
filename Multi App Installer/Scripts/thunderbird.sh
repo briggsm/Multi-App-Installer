@@ -22,16 +22,19 @@ if [[ "$1" == "-appMeta"* ]]; then
 	# (4) - Install as root or user (text is just "root" or "user" [w/o the quotes])
 	# (5) - Proof Paths - Can be 1 path or multiple. If multiple paths, separate each by single pipe (|) - if ANY of the paths exist, it's proof app is already installed.
 
-    # Get Localized Description
+    # Get Localized Description & URL
 	if [ "$1" == "-appMeta tr" ]; then
-        desc="[tr]Thunderbird"
+        desc="Thunderbird (Türkçe)"
+		url="https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=tr"
 	elif [ "$1" == "-appMeta ru" ]; then
-		desc="[ru]Thunderbird"
+		desc="Thunderbird (Русский)"
+		url="https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=ru"
 	else
-		desc="Thunderbird"
+		desc="Thunderbird (English)"
+		url="https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=en-US"
     fi
-    
-	echo "$desc||https://download.mozilla.org/?product=thunderbird-38.6.0&os=osx&lang=en-US||thunderbird.dmg||user||/Applications/thunderbird.app"
+
+	echo "$desc||$url||thunderbird.dmg||user||/Applications/thunderbird.app"
     exit 0
 fi
 
