@@ -24,14 +24,14 @@ if [[ "$1" == "-appMeta"* ]]; then
 
     # Get Localized Description
 	if [ "$1" == "-appMeta tr" ]; then
-        desc="[tr]Gimp"
+        desc="[tr]Gimp 2.8.18-1"
 	elif [ "$1" == "-appMeta ru" ]; then
-		desc="[ru]Gimp"
+		desc="[ru]Gimp 2.8.18-1"
 	else
-		desc="Gimp"
+		desc="Gimp 2.8.18-1"
     fi
     
-	echo "$desc||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.16-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
+	echo "$desc||https://download.gimp.org/mirror/pub/gimp/v2.8/osx/gimp-2.8.18-x86_64-1.dmg||gimp.dmg||user||/Applications/GIMP.app"
     exit 0
 fi
 
@@ -42,8 +42,8 @@ if [[ "$1" == "-i"* ]]; then
 		echo "Gimp is missing from sourceFolder: $sourceFolder"
 	else
 		hdiutil mount -nobrowse -quiet $sourceFolder/gimp.dmg
-		cp -R "/Volumes/Gimp 2.8.16/GIMP.app" /Applications
-		hdiutil unmount -quiet "/Volumes/Gimp 2.8.16"
+		cp -R "/Volumes/Gimp 2.8.18/GIMP.app" /Applications
+		hdiutil unmount -quiet "/Volumes/Gimp 2.8.18"
 		echo "Installed Gimp 2.8.16-1"
 	fi
 	exit 0
