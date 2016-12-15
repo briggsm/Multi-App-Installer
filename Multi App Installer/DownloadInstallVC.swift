@@ -43,11 +43,13 @@ class DownloadInstallVC: NSViewController {
     var appMetaDict = [String : AppMeta]()
     
     var downloadStatusImgViewDict = [String : NSImageView]()
+    var downloadCurrVerLabelDict = [String : NSTextField]()
     var downloadBtnDict = [String : NSButton]()
     var downloadProgressIndicatorDict = [String : NSProgressIndicator]()
     var isDownloadingDict = [String : Bool]()
     
     var installStatusImgViewDict = [String : NSImageView]()
+    var installCurrVerLabelDict = [String : NSTextField]()
     var installBtnDict = [String : NSButton]()
     var installProgressIndicatorDict = [String : NSProgressIndicator]()
     var isInstallingDict = [String : Bool]()
@@ -208,12 +210,30 @@ class DownloadInstallVC: NSViewController {
                 downloadBtn.identifier = scriptToQuery
                 downloadBtnDict[scriptToQuery] = downloadBtn
                 
-                // Download ImgBtn Stack View
+                // Download Img/Btn Stack View
                 let downloadImgBtnSV = NSStackView()
                 downloadImgBtnSV.spacing = 10
                 downloadImgBtnSV.addView(downloadStatusImgView, in: .leading)
                 downloadImgBtnSV.addView(downloadBtn, in: .leading)
                 downloadImgBtnSV.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                
+                // Download Current Version (note: don't use this now [at least not yet], but is here to keep spacing consistent)
+                var downloadCurrVerLabel:NSTextField
+                if #available(OSX 10.12, *) {
+                    downloadCurrVerLabel = NSTextField(labelWithString: "")
+                } else {
+                    // Fallback on earlier versions
+                    downloadCurrVerLabel = NSTextField()
+                    downloadCurrVerLabel.stringValue = ""
+                    downloadCurrVerLabel.isEditable = false
+                    downloadCurrVerLabel.isSelectable = false
+                    downloadCurrVerLabel.isBezeled = false
+                    downloadCurrVerLabel.backgroundColor = NSColor.clear
+                    downloadCurrVerLabel.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                }
+                downloadCurrVerLabel.font = NSFont.systemFont(ofSize: 10.0)
+                downloadCurrVerLabel.identifier = scriptToQuery
+                downloadCurrVerLabelDict[scriptToQuery] = downloadCurrVerLabel
                 
                 // Download Progress
                 let downloadProgressIndicator = NSProgressIndicator()
@@ -228,9 +248,11 @@ class DownloadInstallVC: NSViewController {
                 // Download Stack View
                 let downloadStackView = NSStackView()
                 downloadStackView.orientation = .vertical
+                downloadStackView.alignment = .leading
                 downloadStackView.spacing = 0
                 downloadStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 downloadStackView.addView(downloadImgBtnSV, in: .top)
+                downloadStackView.addView(downloadCurrVerLabel, in: .top)
                 downloadStackView.addView(downloadProgressIndicator, in: .top)
                 
                 // Set isDownloadingDict - just so we always have the Dict to work with
@@ -267,12 +289,30 @@ class DownloadInstallVC: NSViewController {
                 installBtn.identifier = scriptToQuery
                 installBtnDict[scriptToQuery] = installBtn
                 
-                // Install ImgBtn Stack View
+                // Install Img/Btn Stack View
                 let installImgBtnSV = NSStackView()
                 installImgBtnSV.spacing = 10
                 installImgBtnSV.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 installImgBtnSV.addView(installStatusImgView, in: .leading)
                 installImgBtnSV.addView(installBtn, in: .leading)
+                
+                // Install Current Version
+                var installCurrVerLabel:NSTextField
+                if #available(OSX 10.12, *) {
+                    installCurrVerLabel = NSTextField(labelWithString: "(?)")
+                } else {
+                    // Fallback on earlier versions
+                    installCurrVerLabel = NSTextField()
+                    installCurrVerLabel.stringValue = "(?)"
+                    installCurrVerLabel.isEditable = false
+                    installCurrVerLabel.isSelectable = false
+                    installCurrVerLabel.isBezeled = false
+                    installCurrVerLabel.backgroundColor = NSColor.clear
+                    installCurrVerLabel.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
+                }
+                installCurrVerLabel.font = NSFont.systemFont(ofSize: 10.0)
+                installCurrVerLabel.identifier = scriptToQuery
+                installCurrVerLabelDict[scriptToQuery] = installCurrVerLabel
                 
                 // Install Progress
                 let installProgressIndicator = NSProgressIndicator()
@@ -287,9 +327,11 @@ class DownloadInstallVC: NSViewController {
                 // Install Stack View
                 let installStackView = NSStackView()
                 installStackView.orientation = .vertical
+                installStackView.alignment = .leading
                 installStackView.spacing = 0
                 installStackView.translatesAutoresizingMaskIntoConstraints = false  // NSStackView bug for 10.9 & 10.10
                 installStackView.addView(installImgBtnSV, in: .top)
+                installStackView.addView(installCurrVerLabel, in: .top)
                 installStackView.addView(installProgressIndicator, in: .top)
                 
                 // Set isInstallingDict - just so we always have the Dict to work with
@@ -543,7 +585,7 @@ class DownloadInstallVC: NSViewController {
     // MARK: Misc. Functions
     func refreshAllGuiViews() {
         for (scriptToQuery, downloadStatusImgView) in downloadStatusImgViewDict {
-            if let appMeta = appMetaDict[scriptToQuery], let downloadProgressIndicator = downloadProgressIndicatorDict[scriptToQuery], let installStatusImgView = installStatusImgViewDict[scriptToQuery], let downloadBtn = downloadBtnDict[scriptToQuery], let installBtn = installBtnDict[scriptToQuery], let isDownloading = isDownloadingDict[scriptToQuery], let isInstalling = isInstallingDict[scriptToQuery] {
+            if let appMeta = appMetaDict[scriptToQuery], let downloadProgressIndicator = downloadProgressIndicatorDict[scriptToQuery], let installStatusImgView = installStatusImgViewDict[scriptToQuery], let installCurrVerLabel = installCurrVerLabelDict[scriptToQuery], let downloadBtn = downloadBtnDict[scriptToQuery], let installBtn = installBtnDict[scriptToQuery], let isDownloading = isDownloadingDict[scriptToQuery], let isInstalling = isInstallingDict[scriptToQuery] {
                 
                 // === Refresh All Download Views ===
                 
@@ -575,9 +617,11 @@ class DownloadInstallVC: NSViewController {
                 
                 // Install Status ImageView
                 var proofPathActuallyExists = false
+                var actualExistingProofPath = ""
                 for proofPath in appMeta.proofAppExistsPaths {
                     if FileManager.default.fileExists(atPath: proofPath) {
                         proofPathActuallyExists = true
+                        actualExistingProofPath = proofPath  // to use for "version" below
                         break
                     }
                 }
@@ -585,6 +629,29 @@ class DownloadInstallVC: NSViewController {
                     installStatusImgView.image = NSImage(named: "greenCheck")
                 } else {
                     installStatusImgView.image = NSImage(named: "redX")
+                }
+                
+                // Install Current Version Label
+                if installStatusImgView.image?.name() == "greenCheck" {
+                    var outputPipe: Pipe
+                    // Takes too long for mdls to refresh (~10-15 seconds)
+//                    outputPipe = runTask(cmd: "/usr/bin/mdls", arguments: ["-name", "kMDItemVersion", actualExistingProofPath], inputPipe: nil)
+//                    outputPipe = runTask(cmd: "/usr/bin/cut", arguments: ["-d", "\"", "-f2"], inputPipe: outputPipe)
+                    
+                    // Some apps' plist is compiled/binary, so those don't work with this method
+//                    outputPipe = runTask(cmd: "/bin/cat", arguments: ["\(actualExistingProofPath)/Contents/Info.plist"], inputPipe: nil)
+//                    outputPipe = runTask(cmd: "/usr/bin/grep", arguments: ["-A1", "CFBundleShortVersionString"], inputPipe: outputPipe)
+//                    outputPipe = runTask(cmd: "/usr/bin/grep", arguments: ["string"], inputPipe: outputPipe)
+//                    outputPipe = runTask(cmd: "/usr/bin/cut", arguments: ["-d>", "-f2"], inputPipe: outputPipe)
+//                    outputPipe = runTask(cmd: "/usr/bin/cut", arguments: ["-d<", "-f1"], inputPipe: outputPipe)
+                    
+                    // /usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" /Applications/VLC.app/Contents/Info.plist
+                    outputPipe = runTask(cmd: "/usr/libexec/PlistBuddy", arguments: ["-c", "Print CFBundleShortVersionString", "\(actualExistingProofPath)/Contents/Info.plist"], inputPipe: nil)
+                    
+                    let versionStr = getString(fromPipe: outputPipe)
+                    installCurrVerLabel.stringValue = "(\(versionStr))"
+                } else {
+                    installCurrVerLabel.stringValue = ""
                 }
                 
                 // Install Btn
@@ -613,6 +680,31 @@ class DownloadInstallVC: NSViewController {
                 }
             }
         }
+    }
+    
+    func runTask(cmd: String, arguments: [String], inputPipe: Pipe?) -> Pipe {
+        // Init outputPipe
+        let outputPipe = Pipe()
+        
+        // Setup & Launch our process
+        let ps: Process = Process()
+        ps.launchPath = cmd
+        ps.arguments = arguments
+        ps.standardInput = inputPipe
+        ps.standardOutput = outputPipe
+        ps.launch()
+        ps.waitUntilExit()
+
+        return outputPipe
+    }
+    
+    func getString(fromPipe: Pipe) -> String {
+        let data = fromPipe.fileHandleForReading.readDataToEndOfFile()
+        var outputString = String(data: data, encoding: String.Encoding.utf8) ?? ""
+        outputString = outputString.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Return the output
+        return outputString
     }
     
     func printLog(str: String) {
