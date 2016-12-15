@@ -634,18 +634,6 @@ class DownloadInstallVC: NSViewController {
                 // Install Current Version Label
                 if installStatusImgView.image?.name() == "greenCheck" {
                     var outputPipe: Pipe
-                    // Takes too long for mdls to refresh (~10-15 seconds)
-//                    outputPipe = runTask(cmd: "/usr/bin/mdls", arguments: ["-name", "kMDItemVersion", actualExistingProofPath], inputPipe: nil)
-//                    outputPipe = runTask(cmd: "/usr/bin/cut", arguments: ["-d", "\"", "-f2"], inputPipe: outputPipe)
-                    
-                    // Some apps' plist is compiled/binary, so those don't work with this method
-//                    outputPipe = runTask(cmd: "/bin/cat", arguments: ["\(actualExistingProofPath)/Contents/Info.plist"], inputPipe: nil)
-//                    outputPipe = runTask(cmd: "/usr/bin/grep", arguments: ["-A1", "CFBundleShortVersionString"], inputPipe: outputPipe)
-//                    outputPipe = runTask(cmd: "/usr/bin/grep", arguments: ["string"], inputPipe: outputPipe)
-//                    outputPipe = runTask(cmd: "/usr/bin/cut", arguments: ["-d>", "-f2"], inputPipe: outputPipe)
-//                    outputPipe = runTask(cmd: "/usr/bin/cut", arguments: ["-d<", "-f1"], inputPipe: outputPipe)
-                    
-                    // /usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" /Applications/VLC.app/Contents/Info.plist
                     outputPipe = runTask(cmd: "/usr/libexec/PlistBuddy", arguments: ["-c", "Print CFBundleShortVersionString", "\(actualExistingProofPath)/Contents/Info.plist"], inputPipe: nil)
                     
                     let versionStr = getString(fromPipe: outputPipe)
