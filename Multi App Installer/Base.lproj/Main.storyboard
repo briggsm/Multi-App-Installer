@@ -902,11 +902,11 @@
             <objects>
                 <viewController title="Language" id="808-u6-bvs" customClass="LanguageChooserVC" customModule="Multi_App_Installer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="sz9-Px-CK7">
-                        <rect key="frame" x="0.0" y="0.0" width="184" height="107"/>
+                        <rect key="frame" x="0.0" y="0.0" width="194" height="113"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zbu-CI-MQR">
-                                <rect key="frame" x="68" y="13" width="48" height="32"/>
+                                <rect key="frame" x="73" y="13" width="48" height="32"/>
                                 <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSMenuOnStateTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MKw-Sr-9Fx">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -919,21 +919,15 @@ DQ
                                 </connections>
                             </button>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9aC-HQ-QHw">
-                                <rect key="frame" x="18" y="63" width="149" height="26"/>
+                                <rect key="frame" x="18" y="69" width="159" height="26"/>
                                 <popUpButtonCell key="cell" type="push" title="English" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jqu-VA-jle" id="7E2-yV-hBy">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="xet-Rl-fd9">
                                         <items>
-                                            <menuItem title="English" state="on" id="jqu-VA-jle">
-                                                <accessibility identifier="en"/>
-                                            </menuItem>
-                                            <menuItem title="Türkçe" id="8K2-0y-adJ">
-                                                <accessibility identifier="tr"/>
-                                            </menuItem>
-                                            <menuItem title="Русский" id="xza-ax-RBr">
-                                                <accessibility identifier="ru"/>
-                                            </menuItem>
+                                            <menuItem title="English" state="on" toolTip="en" id="jqu-VA-jle"/>
+                                            <menuItem title="Türkçe" toolTip="tr" id="8K2-0y-adJ"/>
+                                            <menuItem title="Русский" toolTip="ru" id="xza-ax-RBr"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
@@ -954,7 +948,7 @@ DQ
                 </viewController>
                 <customObject id="jeH-Cd-jWx" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1201" y="776.5"/>
+            <point key="canvasLocation" x="1235" y="993"/>
         </scene>
     </scenes>
     <resources>

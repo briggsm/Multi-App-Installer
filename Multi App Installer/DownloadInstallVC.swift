@@ -360,6 +360,9 @@ class DownloadInstallVC: NSViewController {
         
         refreshAllGuiViews()
         
+        // Re-center the window on the screen
+        self.view.window?.center()
+        
         performSegue(withIdentifier: "LanguageChooserVC", sender: self)
     }
 
