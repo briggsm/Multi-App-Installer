@@ -16,7 +16,7 @@ class LanguageChooserVC: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let currLangIso = getCurrLangIso()
+        let currLangIso = Fn.getCurrLangIso()
         switch currLangIso {
         case "en":
             languagePUBtn.selectItem(withTitle: "English")
@@ -32,8 +32,9 @@ class LanguageChooserVC: NSViewController {
     
     @IBAction func okBtnClicked(_ sender: NSButton) {
         if let selectedId = languagePUBtn.selectedItem?.accessibilityIdentifier() {
-            if selectedId == getCurrLangIso() {
+            if selectedId == Fn.getCurrLangIso() {
                 // Dismiss this modal View Controller
+                
                 self.dismiss(self)
             } else {
                 // Change to new language & restart app
@@ -43,17 +44,6 @@ class LanguageChooserVC: NSViewController {
                 selfRestart()
             }
         }
-    }
-    
-    func getCurrLangIso() -> String {
-        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! [String]
-        
-        var currLangIso = currLangArr[0]
-        
-        // Chop off everything except 1st two characters
-        currLangIso = currLangIso.substring(to: currLangIso.index(currLangIso.startIndex, offsetBy: 2))
-        
-        return currLangIso
     }
     
     func selfRestart() {

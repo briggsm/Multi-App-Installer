@@ -62,7 +62,7 @@ class DownloadInstallVC: NSViewController {
     
     // MARK: - Initial Loading Functions
     override func viewDidAppear() {
-        //printLog(str: "*viewDidAppear()*")
+        //Fn.printLog(str: "*viewDidAppear()*")
         
         sourceFolder = UserDefaults.standard.string(forKey: "sourceFolder") ?? "/tmp"
         enableInstallPreApps = UserDefaults.standard.bool(forKey: "enableInstallPreApps")
@@ -79,26 +79,26 @@ class DownloadInstallVC: NSViewController {
         let df = DateFormatter()
         df.dateFormat = "y-MM-dd HH:mm:ss"
         let timestamp = df.string(from: d)
-        printLog(str: "=====================")
-        printLog(str: "[" + timestamp + "]")
-        printLog(str: "=====================")
+        Fn.printLog(str: "=====================")
+        Fn.printLog(str: "[" + timestamp + "]")
+        Fn.printLog(str: "=====================")
         
-        printLog(str: "loadView()")
+        Fn.printLog(str: "loadView()")
         super.loadView()
         
         if floor(NSAppKitVersionNumber) <= Double(NSAppKitVersionNumber10_9) {  // This check is necessary, because even in 10.12 loadView() is called.
-            printLog(str: "  calling self.viewDidLoad() from loadView()")
+            Fn.printLog(str: "  calling self.viewDidLoad() from loadView()")
             self.viewDidLoad() // call viewDidLoad (added in 10.10)
         }
     }
     
     override func viewDidLoad() {
-        printLog(str: "viewDidLoad()")
+        Fn.printLog(str: "viewDidLoad()")
         if #available(OSX 10.10, *) {
-            printLog(str: "  super.viewDidLoad()")
+            Fn.printLog(str: "  super.viewDidLoad()")
             super.viewDidLoad()
         } else {
-            printLog(str: "  NOT calling super.viewDidLoad() [because 10.9 or lower is being used.")
+            Fn.printLog(str: "  NOT calling super.viewDidLoad() [because 10.9 or lower is being used.")
             // No need to do anything here because 10.9 and older will have went through the loadView() function & that calls super.loadView()
         }
         
@@ -138,15 +138,15 @@ class DownloadInstallVC: NSViewController {
                     
                     // Sanity Checks
                     guard appMetaArr.count == 5 else {
-                        self.printLog(str: "appMetaArr.count (\(appMetaArr.count)) is not equal to 5! Failing. Format for -appMeta is e.g.: desc||downloadUrl||saveAsFilename||installAsRootOrUser||proofPaths")
+                        Fn.printLog(str: "appMetaArr.count (\(appMetaArr.count)) is not equal to 5! Failing. Format for -appMeta is e.g.: desc||downloadUrl||saveAsFilename||installAsRootOrUser||proofPaths")
                         continue  // to next iteration of for loop
                     }
                     guard let downloadUrl = URL(string: appMetaArr[1]) else {
-                        self.printLog(str: "ERROR: cannot create URL from this string: \(appMetaArr[1])")
+                        Fn.printLog(str: "ERROR: cannot create URL from this string: \(appMetaArr[1])")
                         continue  // to next iteration of for loop
                     }
                     guard appMetaArr[3] == "root" || appMetaArr[3] == "user" else {
-                        self.printLog(str: "ERROR: appMeta[3] is not equal to 'root' or 'user'!")
+                        Fn.printLog(str: "ERROR: appMeta[3] is not equal to 'root' or 'user'!")
                         continue  // to next iteration of for loop
                     }
                     
@@ -158,7 +158,7 @@ class DownloadInstallVC: NSViewController {
                 }
             }
         }
-        run(theseScripts: scriptsToQuery, withArgs: ["-appMeta \(getCurrLangIso())"], asUser: .User, onThread: .Main, withOutputHandler: outputHandler)
+        run(theseScripts: scriptsToQuery, withArgs: ["-appMeta \(Fn.getCurrLangIso())"], asUser: .User, onThread: .Main, withOutputHandler: outputHandler)
         
         for scriptToQuery in scriptsToQuery {
             if let appMeta = appMetaDict[scriptToQuery] {
@@ -376,8 +376,8 @@ class DownloadInstallVC: NSViewController {
                     urlSession.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) -> Void in
                         for downloadTask in downloadTasks {
                             if downloadTask.taskDescription == scriptToQuery {
-                                self.printLog(str: "----------")
-                                self.printLog(str: "Canceling Task: \(scriptToQuery)")
+                                Fn.printLog(str: "----------")
+                                Fn.printLog(str: "Canceling Task: \(scriptToQuery)")
                                 downloadTask.cancel()
                                 self.isDownloadingDict[scriptToQuery] = false
                                 self.refreshAllGuiViews()
@@ -494,8 +494,8 @@ class DownloadInstallVC: NSViewController {
     
     // MARK: Download Task
     func startDownloadTask(scriptToQuery: String, downloadUrl: URL) {
-        self.printLog(str: "----------")
-        self.printLog(str: "Starting Download: \(downloadUrl)")
+        Fn.printLog(str: "----------")
+        Fn.printLog(str: "Starting Download: \(downloadUrl)")
         let urlRequest = URLRequest(url: downloadUrl)
         let downloadTask = urlSession.downloadTask(with: urlRequest)
         downloadTask.taskDescription = scriptToQuery
@@ -507,8 +507,8 @@ class DownloadInstallVC: NSViewController {
     // MARK: Run Scripts
     // Note: This is the function the code is expected to call when wanting to run/query any script(s)
     func run(theseScripts: [String], withArgs: [String], asUser: RunScriptAs, onThread: RunScriptOnThread, withOutputHandler: ((_ outputDict: [String : String]) -> Void)?) {
-        printLog(str: "----------")
-        printLog(str: "runScripts: \(theseScripts), withArgs: \(withArgs), asUser: \(asUser), onThread: \(onThread)")
+        Fn.printLog(str: "----------")
+        Fn.printLog(str: "runScripts: \(theseScripts), withArgs: \(withArgs), asUser: \(asUser), onThread: \(onThread)")
         
         if onThread == .Bg {
             let taskQueue = DispatchQueue.global(qos: .userInitiated)
@@ -529,14 +529,14 @@ class DownloadInstallVC: NSViewController {
         if asUser == .Root {
             appleScriptStr += " with administrator privileges"
         }
-        printLog(str: " appleScriptStr: \(appleScriptStr)")
+        Fn.printLog(str: " appleScriptStr: \(appleScriptStr)")
         
         if let asObject = NSAppleScript(source: appleScriptStr) {
             // Run AppleScript
             var asError: NSDictionary?
-            printLog(str: "**temp: right before AS call.")
+            //Fn.printLog(str: "**temp: right before AS call.")
             let asOutput: NSAppleEventDescriptor = asObject.executeAndReturnError(&asError)
-            self.printLog(str: " [asOutput: \(asOutput.stringValue ?? "")]")
+            Fn.printLog(str: " [asOutput: \(asOutput.stringValue ?? "")]")
             
             // Parse & Handle AppleScript output
             let outputArr = self.parseAppleScript(asOutput: asOutput, asError: asError)
@@ -546,7 +546,7 @@ class DownloadInstallVC: NSViewController {
     
     func parseAppleScript(asOutput: NSAppleEventDescriptor, asError: NSDictionary?) -> [String] {
         if let err = asError {
-            printLog(str: "AppleScript Error: \(err)")
+            Fn.printLog(str: "AppleScript Error: \(err)")
             return []
         } else {
             // First tidy-up str a bit
@@ -566,8 +566,8 @@ class DownloadInstallVC: NSViewController {
             var outputDict = [String : String]()
             
             guard outputArr.count == theseScripts.count else {
-                self.printLog(str: "*ERROR: outputArray.count (\(outputArr.count)) is not equal to scripts.count (\(theseScripts.count))")
-                self.printLog(str: "*  outputArr: \(outputArr)")
+                Fn.printLog(str: "*ERROR: outputArray.count (\(outputArr.count)) is not equal to scripts.count (\(theseScripts.count))")
+                Fn.printLog(str: "*  outputArr: \(outputArr)")
                 outputHandler(outputDict)
                 return
             }
@@ -695,54 +695,17 @@ class DownloadInstallVC: NSViewController {
         return outputString
     }
     
-    func printLog(str: String) {
-        printLog(str: str, terminator: "\n")
-    }
-    
-    func printLog(str: String, terminator: String) {
-        
-        // First tidy-up str a bit
-        var prettyStr = str.replacingOccurrences(of: "\r\n", with: "\n") // just incase
-        prettyStr = prettyStr.replacingOccurrences(of: "\r", with: "\n") // becasue AppleScript returns line endings with '\r'
-        
-        // Normal print
-        print(prettyStr, terminator: terminator)
-        
-        // Print to log file
-        if let cachesDirUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
-            let logFilePathUrl = cachesDirUrl.appendingPathComponent("multi-app-installer-log.txt")
-            let logData = (prettyStr + terminator).data(using: .utf8, allowLossyConversion: false)!
-            
-            if FileManager.default.fileExists(atPath: logFilePathUrl.path) {
-                do {
-                    let logFileHandle = try FileHandle(forWritingTo: logFilePathUrl)
-                    logFileHandle.seekToEndOfFile()
-                    logFileHandle.write(logData)
-                    logFileHandle.closeFile()
-                } catch {
-                    print("Unable to write to existing log file, at this path: \(logFilePathUrl.path)")
-                }
-            } else {
-                do {
-                    try logData.write(to: logFilePathUrl)
-                } catch {
-                    print("Can't write to new log file, at this path: \(logFilePathUrl.path)")
-                }
-            }
-        }
-    }
-    
     func changeCurrentDirToScriptsDir() {
         guard let runScriptsPath = Bundle.main.path(forResource: "Scripts/runScripts", ofType:"sh") else {
-            printLog(str: "\n  Unable to locate: Scripts/runScripts.sh!")
+            Fn.printLog(str: "\n  Unable to locate: Scripts/runScripts.sh!")
             return
         }
         
         scriptsDirPath = String(runScriptsPath.characters.dropLast(13))  // drop off: "runScripts.sh"
         if FileManager.default.changeCurrentDirectoryPath(scriptsDirPath) {
-            //printLog(str: "success changing dir to: \(scriptsDirPath)")
+            //Fn.printLog(str: "success changing dir to: \(scriptsDirPath)")
         } else {
-            printLog(str: "failure changing dir to: \(scriptsDirPath)")
+            Fn.printLog(str: "failure changing dir to: \(scriptsDirPath)")
         }
     }
     
@@ -757,20 +720,9 @@ class DownloadInstallVC: NSViewController {
             
             scriptsToQuery = scriptsDirContents
         } catch {
-            printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
+            Fn.printLog(str: "Cannot get contents of Scripts dir: \(scriptsDirPath)")
             scriptsToQuery = []
         }
-    }
-    
-    func getCurrLangIso() -> String {
-        let currLangArr = UserDefaults.standard.value(forKey: "AppleLanguages") as! [String]
-        
-        var currLangIso = currLangArr[0]
-        
-        // Chop off everything except 1st two characters
-        currLangIso = currLangIso.substring(to: currLangIso.index(currLangIso.startIndex, offsetBy: 2))
-        
-        return currLangIso
     }
 }
 
@@ -783,41 +735,41 @@ extension DownloadInstallVC: URLSessionDownloadDelegate {
                     didFinishDownloadingTo location: URL) {
         // Download task DID finish successfully. Though, it MIGHT be HTML in case of 404 error, for example.
         
-        //printLog(str: "=== Session DownloadTask DidFinishDownloadingTo: \(location)")
+        //Fn.printLog(str: "=== Session DownloadTask DidFinishDownloadingTo: \(location)")
         
         if let scriptToQuery = downloadTask.taskDescription {
             if let appMeta = appMetaDict[scriptToQuery] {
                 if let httpResponse = downloadTask.response as? HTTPURLResponse {
                     let statusCode = httpResponse.statusCode
-                    printLog(str: "----------")
-                    printLog(str: "HTTP Status Code: \(statusCode)")
+                    Fn.printLog(str: "----------")
+                    Fn.printLog(str: "HTTP Status Code: \(statusCode)")
                     if statusCode == 200 {
                         let destinationURLForFile = URL(fileURLWithPath: "\(sourceFolder)/\(appMeta.saveAsFilename)")
-                        //printLog(str: "destUrlForFile: \(destinationURLForFile)")
-                        printLog(str: "Download Successful! (\(appMeta.saveAsFilename))")
+                        //Fn.printLog(str: "destUrlForFile: \(destinationURLForFile)")
+                        Fn.printLog(str: "Download Successful! (\(appMeta.saveAsFilename))")
                         
                         // Remove existing file if exists at destination dir
                         if FileManager.default.fileExists(atPath: destinationURLForFile.path){
-                            printLog(str: "File already exists at destination. Removing.")
+                            Fn.printLog(str: "File already exists at destination. Removing.")
                             do {
                                 try FileManager.default.removeItem(at: destinationURLForFile)
                             }catch{
-                                printLog(str: "  An error occurred while removing file")
+                                Fn.printLog(str: "  An error occurred while removing file")
                             }
                         }
                         
                         // Move item from temp dir to desination dir
-                        printLog(str: "Moving download to: \(destinationURLForFile)")
+                        Fn.printLog(str: "Moving download to: \(destinationURLForFile)")
                         do {
                             try FileManager.default.moveItem(at: location, to: destinationURLForFile)
                         }catch{
-                            printLog(str: "  An error occurred while moving download to destination url")
+                            Fn.printLog(str: "  An error occurred while moving download to destination url")
                         }
                     } else {
-                        printLog(str: "HTTP Response (Status Code) is not 200! Assuming Download Failure. Not copying file to destination url")
+                        Fn.printLog(str: "HTTP Response (Status Code) is not 200! Assuming Download Failure. Not copying file to destination url")
                     }
                 } else {
-                    printLog(str: "Unable to obtain HTTP Response! Assuming Download Failure. Not copying file to destination url")
+                    Fn.printLog(str: "Unable to obtain HTTP Response! Assuming Download Failure. Not copying file to destination url")
                 }
 
                 isDownloadingDict[scriptToQuery] = false
@@ -846,12 +798,12 @@ extension DownloadInstallVC: URLSessionDownloadDelegate {
                     didCompleteWithError error: Error?){
         // Any type of task is done, but MAYBE successfully, MAYBE with error.
         
-        //printLog(str: "=== Session Task DidCompleteWithMAYBEError")
+        //Fn.printLog(str: "=== Session Task DidCompleteWithMAYBEError")
         
         if (error != nil) {
-            printLog(str: "taskDidCompleteWithError: \(error!.localizedDescription)")
+            Fn.printLog(str: "taskDidCompleteWithError: \(error!.localizedDescription)")
         }else{
-            printLog(str: "The task finished transferring data successfully (any status code, even 404)")
+            Fn.printLog(str: "The task finished transferring data successfully (any status code, even 404)")
         }
         
         if let scriptToQuery = task.taskDescription {
