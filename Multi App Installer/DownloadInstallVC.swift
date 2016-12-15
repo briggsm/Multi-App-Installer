@@ -112,6 +112,8 @@ class DownloadInstallVC: NSViewController {
     
     func initEverything() {
         
+        performSegue(withIdentifier: "LanguageChooserVC", sender: self)
+        
         // Init Session for Downloading files.
         let config = URLSessionConfiguration.default
         urlSession = URLSession(configuration: config, delegate: self, delegateQueue: .main)
@@ -362,8 +364,6 @@ class DownloadInstallVC: NSViewController {
         
         // Re-center the window on the screen
         self.view.window?.center()
-        
-        performSegue(withIdentifier: "LanguageChooserVC", sender: self)
     }
 
     // MARK: IB Actions
