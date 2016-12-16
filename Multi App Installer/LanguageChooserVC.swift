@@ -38,6 +38,7 @@ class LanguageChooserVC: NSViewController {
             } else {
                 // Change to new language & restart app
                 UserDefaults.standard.setValue([selectedId], forKey: "AppleLanguages")
+                UserDefaults.standard.setValue(true, forKey: "SkipLanguageDialogBoxOnNextStartup")
                 UserDefaults.standard.synchronize()
                 selfRestart()
             }
