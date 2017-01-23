@@ -642,7 +642,8 @@ class DownloadInstallVC: NSViewController {
                 // Install Current Version Label
                 if installStatusImgView.image?.name() == "greenCheck" {
                     var outputPipe: Pipe
-                    outputPipe = runTask(cmd: "/usr/libexec/PlistBuddy", arguments: ["-c", "Print CFBundleShortVersionString", "\(actualExistingProofPath)/Contents/Info.plist"], inputPipe: nil)
+                    let relPathToPlist = actualExistingProofPath.hasSuffix(".framework") ? "Resources/Info.plist" : "Contents/Info.plist"
+                    outputPipe = runTask(cmd: "/usr/libexec/PlistBuddy", arguments: ["-c", "Print CFBundleShortVersionString", "\(actualExistingProofPath)/\(relPathToPlist)"], inputPipe: nil)
                     
                     let versionStr = getString(fromPipe: outputPipe)
                     installCurrVerLabel.stringValue = "(\(versionStr))"
