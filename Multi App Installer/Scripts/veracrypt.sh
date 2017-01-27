@@ -31,7 +31,7 @@ if [[ "$1" == "-appMeta"* ]]; then
 		desc="VeraCrypt 1.19"
     fi
 
-	echo "$desc||https://launchpad.net/veracrypt/trunk/1.19/+download/VeraCrypt_1.19.dmg||veracrypt.dmg||user||/Applications/VeraCrypt.app"
+	echo "$desc||https://launchpad.net/veracrypt/trunk/1.19/+download/VeraCrypt_1.19.dmg||veracrypt.dmg||root||/Applications/VeraCrypt.app"
     exit 0
 fi
 

@@ -31,7 +31,7 @@ if [[ "$1" == "-appMeta"* ]]; then
 		desc="OSXFuse 3.5.4"
     fi
 
-	echo "$desc||https://github.com/osxfuse/osxfuse/releases/download/osxfuse-3.5.4/osxfuse-3.5.4.dmg||osxfuse.dmg||user||/Library/Frameworks/OSXFUSE.framework"
+	echo "$desc||https://github.com/osxfuse/osxfuse/releases/download/osxfuse-3.5.4/osxfuse-3.5.4.dmg||osxfuse.dmg||root||/Library/Frameworks/OSXFUSE.framework"
     exit 0
 fi
 
