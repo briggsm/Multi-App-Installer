@@ -70,6 +70,7 @@ class DownloadInstallVC: NSViewController {
         refreshAllGuiViews()
     }
     
+    /*
     override func loadView() {
         // Adding this function so older OS's (eg <=10.9) can still call our viewDidLoad() function
         // Seems this function is called for older OS's (eg 10.9) and newer ones as well (eg. 10.12)
@@ -91,6 +92,7 @@ class DownloadInstallVC: NSViewController {
             self.viewDidLoad() // call viewDidLoad (added in 10.10)
         }
     }
+     */
     
     override func viewDidLoad() {
         Fn.printLog(str: "viewDidLoad()")
