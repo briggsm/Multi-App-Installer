@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4777FA4F1F8E48EC00456100 /* AppsStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4777FA4E1F8E48EC00456100 /* AppsStackView.swift */; };
 		47A8D3081DF9E8FE00D17DEB /* LanguageChooserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A8D3071DF9E8FE00D17DEB /* LanguageChooserVC.swift */; };
 		47C9A8611DF09DC8003C02F3 /* MiscScripts in Resources */ = {isa = PBXBuildFile; fileRef = 47C9A8601DF09DC8003C02F3 /* MiscScripts */; };
 		47C9A8631DF0A278003C02F3 /* Scripts in Resources */ = {isa = PBXBuildFile; fileRef = 47C9A8621DF0A278003C02F3 /* Scripts */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4777FA4E1F8E48EC00456100 /* AppsStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsStackView.swift; sourceTree = "<group>"; };
 		47A8D3071DF9E8FE00D17DEB /* LanguageChooserVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LanguageChooserVC.swift; sourceTree = "<group>"; };
 		47C9A8601DF09DC8003C02F3 /* MiscScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MiscScripts; sourceTree = "<group>"; };
 		47C9A8621DF0A278003C02F3 /* Scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Scripts; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				47F089F11DE18AAD00171D0D /* SettingsVC.swift */,
 				47F089F31DE18E6800171D0D /* DownloadInstallVC.swift */,
 				47A8D3071DF9E8FE00D17DEB /* LanguageChooserVC.swift */,
+				4777FA4E1F8E48EC00456100 /* AppsStackView.swift */,
 				47EB38E61E0297D100E4E87B /* Fn.swift */,
 				47C9A8621DF0A278003C02F3 /* Scripts */,
 				47C9A8601DF09DC8003C02F3 /* MiscScripts */,
@@ -154,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47A8D3081DF9E8FE00D17DEB /* LanguageChooserVC.swift in Sources */,
+				4777FA4F1F8E48EC00456100 /* AppsStackView.swift in Sources */,
 				47F089E51DE1853F00171D0D /* ViewController.swift in Sources */,
 				47F089E31DE1853F00171D0D /* AppDelegate.swift in Sources */,
 				47F089F41DE18E6800171D0D /* DownloadInstallVC.swift in Sources */,
