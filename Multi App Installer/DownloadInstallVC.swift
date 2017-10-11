@@ -366,11 +366,11 @@ class DownloadInstallVC: NSViewController {
                 //self.view.window?.center()
             }
         }
-        
+
         refreshAllGuiViews()
         
         // Re-center the window on the screen
-        self.view.window?.center()
+        //self.view.window?.center()
     }
 
     // MARK: IB Actions
